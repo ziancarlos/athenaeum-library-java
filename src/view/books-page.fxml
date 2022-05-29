@@ -11,12 +11,12 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Text layoutX="22.0" layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Books">
+      <Text layoutX="22.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Books">
          <font>
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
-      <Button layoutX="517.0" layoutY="14.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="64.0" text="Back" />
+      <Button layoutX="517.0" layoutY="22.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="64.0" text="Back" />
       <Button layoutX="110.0" layoutY="336.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Deactivate" />
       <Button layoutX="22.0" layoutY="336.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Edit" />
       <Button layoutX="521.0" layoutY="74.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="56.0" text="Search" />
@@ -24,10 +24,10 @@
       <TableView layoutX="22.0" layoutY="114.0" prefHeight="210.0" prefWidth="555.0">
         <columns>
           <TableColumn prefWidth="45.0" text="ID" />
-          <TableColumn prefWidth="90.0" text="Name" />
-            <TableColumn prefWidth="85.0" text="Located" />
-            <TableColumn prefWidth="95.0" text="Purchase Date" />
-            <TableColumn prefWidth="78.0" text="Availability" />
+          <TableColumn prefWidth="154.0" text="Name" />
+            <TableColumn prefWidth="115.0" text="Category" />
+            <TableColumn prefWidth="131.0" text="Purchase Date" />
+            <TableColumn prefWidth="109.0" text="Availability" />
         </columns>
       </TableView>
       <ComboBox layoutX="22.0" layoutY="74.0" prefWidth="150.0" />
