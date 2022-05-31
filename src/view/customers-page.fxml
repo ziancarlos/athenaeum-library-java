@@ -8,26 +8,26 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomerController">
    <children>
       <Text layoutX="21.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Customer">
          <font>
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
-      <Button layoutX="515.0" layoutY="22.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="64.0" text="Back" />
-      <Button layoutX="21.0" layoutY="65.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Add" />
-      <TableView layoutX="21.0" layoutY="100.0" prefHeight="237.0" prefWidth="559.0">
+      <Button layoutX="515.0" layoutY="22.0" mnemonicParsing="false" onAction="#backBtn" prefHeight="32.0" prefWidth="64.0" text="Back" />
+      <Button layoutX="21.0" layoutY="65.0" mnemonicParsing="false" onAction="#addCustomerBtn" prefHeight="25.0" prefWidth="58.0" text="Add" />
+      <TableView fx:id="table" layoutX="21.0" layoutY="100.0" prefHeight="237.0" prefWidth="559.0">
          <columns>
-            <TableColumn prefWidth="38.0" text="ID" />
-            <TableColumn prefWidth="178.0" text="Username" />
-            <TableColumn prefWidth="218.0" text="Phone Number" />
-            <TableColumn prefWidth="124.0" text="Blacklisted" />
+            <TableColumn fx:id="idCol" prefWidth="38.0" text="ID" />
+            <TableColumn fx:id="usernameCol" prefWidth="178.0" text="Username" />
+            <TableColumn fx:id="phoneNumberCol" prefWidth="218.0" text="Phone Number" />
+            <TableColumn fx:id="blacklistedCol" prefWidth="124.0" text="Blacklisted" />
          </columns>
       </TableView>
-      <Button layoutX="85.0" layoutY="65.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Edit" />
-      <Button layoutX="150.0" layoutY="65.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Details" />
-      <Button layoutX="524.0" layoutY="65.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="56.0" text="Search" />
-      <TextField layoutX="369.0" layoutY="65.0" prefHeight="25.0" prefWidth="144.0" />
+      <Button layoutX="85.0" layoutY="65.0" mnemonicParsing="false" onAction="#editCustomerBtn" prefHeight="25.0" prefWidth="58.0" text="Edit" />
+      <Button layoutX="150.0" layoutY="65.0" mnemonicParsing="false" onAction="#detailCustomerBtn" prefHeight="25.0" prefWidth="58.0" text="Details" />
+      <TextField layoutX="371.0" layoutY="65.0" onAction="#searchTf" prefHeight="25.0" prefWidth="144.0" />
+      <Button layoutX="522.0" layoutY="65.0" mnemonicParsing="false" onAction="#searchBtn" prefHeight="25.0" prefWidth="58.0" text="Search" />
    </children>
 </AnchorPane>
