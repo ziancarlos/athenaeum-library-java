@@ -1,9 +1,11 @@
 package model;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import tools.DatabaseTools;
@@ -18,12 +20,43 @@ public class User {
     private SimpleStringProperty blacklisted;
 
     public User(int id, String username, String password, String role, String phoneNumber, String date) {
+
         this.id = new SimpleIntegerProperty(id);
         this.username = new SimpleStringProperty(username);
         this.password = new SimpleStringProperty(password);
         this.role = new SimpleStringProperty(role);
         this.phoneNumber = new SimpleStringProperty(phoneNumber);
         this.date = new SimpleStringProperty(date);
+        this.blacklisted = new SimpleStringProperty("");
+        // check role
+        if (this.getRole().equals("user")) {
+            Connection connection = DatabaseTools.getConnection();
+
+            String sql = "CALL checkIfThereIsPenaltiesUnpaid(?,?);";
+
+            try {
+                CallableStatement callableStatement = connection.prepareCall(sql);
+                callableStatement.setInt(1, this.getId());
+                callableStatement.registerOutParameter(2, java.sql.Types.INTEGER);
+
+                callableStatement.execute();
+
+                Integer result = (Integer) callableStatement.getObject(2, Integer.class);
+
+                if (result > 0) {
+                    this.blacklisted.setValue("Yes");
+                } else {
+                    this.blacklisted.setValue("No");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            this.setBlacklisted("unknown");
+        }
+
     }
 
     public int getId() {
@@ -79,7 +112,6 @@ public class User {
     }
 
     public void setBlacklisted(String blacklisted) {
-
         this.blacklisted.set(blacklisted);
     }
 
@@ -102,7 +134,7 @@ public class User {
         if (resultSet.next()) {
             User user = new User(resultSet.getInt("id"), resultSet.getString("username"),
                     resultSet.getString("password"),
-                    resultSet.getString("role"), resultSet.getString("phoneNumber"),
+                    resultSet.getString("role"), resultSet.getString("phone_number"),
                     resultSet.getString("created_at"));
 
             DatabaseTools.closeQueryOperationWithPreparedStatement(connection, preparedStatement, resultSet);
