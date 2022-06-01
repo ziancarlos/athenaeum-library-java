@@ -36,7 +36,7 @@ public class LoginController {
             user = User.validateUser(usernameTf.getText(), passwordTf.getText());
         } catch (SQLException e) {
             AlertTools.AlertError("Error!", "Contact Support!", null);
-
+            e.printStackTrace();
             return;
         }
 
