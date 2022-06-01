@@ -1,6 +1,7 @@
 package controller;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -91,9 +92,10 @@ public class CustomerController {
 
         try {
             Connection connection = DatabaseTools.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM users WHERE role = 'user' AND username LIKE '%"
-                    + searchText + "%'");
+            PreparedStatement statement = connection
+                    .prepareStatement("SELECT * FROM users WHERE role = 'user' AND username LIKE ?");
+            statement.setString(1, "%" + searchText + "%");
+            ResultSet resultSet = statement.executeQuery();
 
             table.getItems().clear();
 
