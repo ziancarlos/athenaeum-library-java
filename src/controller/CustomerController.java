@@ -15,6 +15,7 @@ import model.User;
 import tools.AlertTools;
 import tools.BackBtnTools;
 import tools.DatabaseTools;
+import tools.SwitchSceneTools;
 import tools.ValidationTools;
 
 public class CustomerController {
@@ -38,6 +39,7 @@ public class CustomerController {
     private TextField searchTf;
 
     public void initialize() {
+
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         usernameCol.setCellValueFactory(new PropertyValueFactory<>("username"));
         phoneNumberCol.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
@@ -63,12 +65,9 @@ public class CustomerController {
 
     @FXML
     void addCustomerBtn(ActionEvent event) {
+        SwitchSceneTools.changeSceneActionEvent(event, "../view/customer-add-page.fxml");
 
-    }
-
-    @FXML
-    void backBtn(ActionEvent event) {
-        BackBtnTools.backBtnActionEvent(event);
+        BackBtnTools.addToBackBtnStack("../view/customers-page.fxml");
     }
 
     @FXML
@@ -78,7 +77,9 @@ public class CustomerController {
 
     @FXML
     void editCustomerBtn(ActionEvent event) {
+        SwitchSceneTools.changeSceneActionEvent(event, "../view/customer-edit-page.fxml");
 
+        BackBtnTools.addToBackBtnStack("../view/customers-page.fxml");
     }
 
     @FXML
@@ -106,9 +107,16 @@ public class CustomerController {
                                 resultSet.getString("phone_number"), resultSet.getString("created_at")));
             }
 
+            DatabaseTools.closeQueryOperationWithPreparedStatement(connection, statement, resultSet);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    void backBtn(ActionEvent event) {
+        BackBtnTools.backBtnActionEvent(event);
     }
 
 }
