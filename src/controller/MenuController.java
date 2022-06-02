@@ -12,10 +12,11 @@ public class MenuController {
 
     @FXML
     void logoutBtn(ActionEvent event) {
-        CurrentUser.currentUser = null;
 
-        if (AlertTools.AlertConfirmation("Logout onfirmation", "Are you sure? ", null).get() == ButtonType.OK) {
+        if (AlertTools.AlertConfirmation("Logout confirmation", "Are you sure? ", null).get() == ButtonType.OK) {
             SwitchSceneTools.changeSceneActionEvent(event, "../view/login-page.fxml");
+
+            CurrentUser.currentUser = null;
         }
 
     }
@@ -30,7 +31,6 @@ public class MenuController {
         SwitchSceneTools.changeSceneActionEvent(event, "../view/customers-page.fxml");
 
         BackBtnTools.addToBackBtnStack("../view/menu-page.fxml");
-
     }
 
 }
