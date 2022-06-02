@@ -7,32 +7,32 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomerAddController">
    <children>
       <Text layoutX="21.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="New Customer">
          <font>
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
-      <Button layoutX="515.0" layoutY="22.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="64.0" text="Back" />
+      <Button layoutX="515.0" layoutY="22.0" mnemonicParsing="false" onAction="#backBtn" prefHeight="32.0" prefWidth="64.0" text="Back" />
       <Label layoutX="21.0" layoutY="66.0" text="Customer Username">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <TextField layoutX="21.0" layoutY="91.0" prefHeight="25.0" prefWidth="495.0" />
+      <TextField fx:id="usernameTf" layoutX="21.0" layoutY="91.0" prefHeight="25.0" prefWidth="495.0" />
       <Label layoutX="21.0" layoutY="124.0" text="Customer Phone Number">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <TextField layoutX="21.0" layoutY="149.0" prefHeight="25.0" prefWidth="495.0" />
+      <TextField fx:id="phoneNumberTf" layoutX="21.0" layoutY="149.0" prefHeight="25.0" prefWidth="495.0" />
       <Label layoutX="21.0" layoutY="188.0" text="Customer Password">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <TextField layoutX="21.0" layoutY="213.0" prefHeight="25.0" prefWidth="495.0" />
-      <Button layoutX="21.0" layoutY="267.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="495.0" text="Add Customer" />
+      <TextField fx:id="passwordTf" layoutX="21.0" layoutY="213.0" prefHeight="25.0" prefWidth="495.0" />
+      <Button layoutX="21.0" layoutY="267.0" mnemonicParsing="false" onAction="#addBtn" prefHeight="25.0" prefWidth="495.0" text="Add Customer" />
    </children>
 </AnchorPane>
