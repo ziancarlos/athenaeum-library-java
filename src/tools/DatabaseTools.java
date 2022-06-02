@@ -13,6 +13,12 @@ import com.mysql.cj.jdbc.Driver;
 
 public class DatabaseTools {
 
+    /**
+     * Creating new connection to database
+     * 
+     * @return the connection
+     * 
+     */
     public static java.sql.Connection getConnection() {
         String databaseName = "";
         String databaseUsername = "";
@@ -50,6 +56,14 @@ public class DatabaseTools {
         return conn;
     }
 
+    /**
+     * Closing the connection to database
+     * 
+     * @param conn      the connection
+     * @param statement the statement
+     * @param resultSet the result set
+     * 
+     */
     public static void closeQueryOperation(java.sql.Connection conn, Statement statement, ResultSet resultSet) {
         try {
             conn.close();
@@ -60,6 +74,13 @@ public class DatabaseTools {
         }
     }
 
+    /**
+     * Closing the connection to database
+     * 
+     * @param conn      the connection
+     * @param statement the statement
+     * 
+     */
     public static void closeQueryOperation(java.sql.Connection conn, Statement statement) {
         try {
             conn.close();
@@ -69,6 +90,14 @@ public class DatabaseTools {
         }
     }
 
+    /**
+     * Closing the connection to database with prepare statement
+     * 
+     * @param conn              the connection
+     * @param preparedStatement the prepared statement
+     * @param resultSet         the result set
+     * 
+     */
     public static void closeQueryOperationWithPreparedStatement(java.sql.Connection conn, PreparedStatement statement,
             ResultSet resultSet) {
         try {
@@ -80,6 +109,13 @@ public class DatabaseTools {
         }
     }
 
+    /**
+     * Closing the connection to database with prepare statement
+     * 
+     * @param conn              the connection
+     * @param preparedStatement the prepared statement
+     * 
+     */
     public static void closeQueryOperationWithPreparedStatement(java.sql.Connection conn, PreparedStatement statement) {
         try {
             conn.close();
