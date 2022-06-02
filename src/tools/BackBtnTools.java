@@ -14,8 +14,6 @@ public class BackBtnTools {
      */
     public static void addToBackBtnStack(String scene) {
         backBtnStack.push(scene);
-
-        System.out.println(backBtnStack);
     }
 
     /**

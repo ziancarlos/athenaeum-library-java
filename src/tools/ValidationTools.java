@@ -18,4 +18,30 @@ public class ValidationTools {
         }
         return false;
     }
+
+    /**
+     * check text field is empty or null
+     * 
+     * @param phoneNumber phone number we wanna check the format
+     * @return Return true if the phone number is valid
+     */
+    public static boolean isPhoneNumberValid(String phoneNumber) {
+        String[] splittedPhoneNumber = phoneNumber.split("");
+        String countryCode = phoneNumber.substring(0, 4);
+
+        if (!countryCode.equals("+628")) {
+            return false;
+        }
+
+        phoneNumber = "";
+        for (int i = 4; i < splittedPhoneNumber.length; i++) {
+            phoneNumber += splittedPhoneNumber[i];
+        }
+
+        if (phoneNumber.matches("[0-9]+") && phoneNumber.length() > 8 && phoneNumber.length() < 12) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
