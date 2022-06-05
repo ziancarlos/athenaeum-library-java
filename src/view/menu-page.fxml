@@ -13,12 +13,12 @@
          </font>
       </Text>
       <Button layoutX="506.0" layoutY="21.0" mnemonicParsing="false" onAction="#logoutBtn" prefHeight="32.0" prefWidth="64.0" text="Logout" />
-      <Button layoutX="29.0" layoutY="64.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="256.0" text="Books" />
+      <Button layoutX="29.0" layoutY="64.0" mnemonicParsing="false" onAction="#booksBtn" prefHeight="32.0" prefWidth="256.0" text="Books" />
       <Button layoutX="29.0" layoutY="102.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="256.0" text="Borrowing" />
-      <Button layoutX="29.0" layoutY="140.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="256.0" text="Purchasing" />
+      <Button layoutX="29.0" layoutY="140.0" mnemonicParsing="false" onAction="#purchasingBtn" prefHeight="32.0" prefWidth="256.0" text="Purchasing" />
       <Button layoutX="29.0" layoutY="178.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="256.0" text="Bookkeeping" />
       <Button layoutX="29.0" layoutY="216.0" mnemonicParsing="false" onAction="#customerBtn" prefHeight="32.0" prefWidth="256.0" text="Customer" />
-      <Button layoutX="29.0" layoutY="254.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="256.0" text="Category" />
+      <Button layoutX="29.0" layoutY="254.0" mnemonicParsing="false" onAction="#categoryBtn" prefHeight="32.0" prefWidth="256.0" text="Category" />
       <Button layoutX="29.0" layoutY="294.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="256.0" text="Penalties" />
       <Button layoutX="29.0" layoutY="332.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="256.0" text="Libarians" />
       <Button layoutX="29.0" layoutY="370.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="256.0" text="History" />
