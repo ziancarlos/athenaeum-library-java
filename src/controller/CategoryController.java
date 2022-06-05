@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,14 +8,22 @@ import java.sql.Statement;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Category;
 import tools.DatabaseTools;
+import tools.SwitchSceneTools;
 import tools.ValidationTools;
 import tools.AlertTools;
+import tools.BackBtnTools;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.scene.Node;
 
 public class CategoryController {
 
@@ -58,28 +67,109 @@ public class CategoryController {
 
     @FXML
     void addBtn(ActionEvent event) {
+        SwitchSceneTools.changeSceneActionEvent(event, "../view/category-add-page.fxml");
 
+        BackBtnTools.addToBackBtnStack("../view/categories-page.fxml");
     }
 
     @FXML
     void backBtn(ActionEvent event) {
-
+        BackBtnTools.backBtnActionEvent(event);
     }
 
     @FXML
     void deleteBtn(ActionEvent event) {
+        Category category = table.getSelectionModel().getSelectedItem();
 
+        if(category == null){
+            AlertTools.AlertInformation("Error!", "No Category Selected!", "Please select a category to delete.");
+            return;
+        }
+
+        if(category.getConnectedBooks() > 0){
+            AlertTools.AlertError("Error!", "This Category Is Connected To Books!", null);
+            
+            return;
+        }
+
+        if(AlertTools.AlertConfirmation("Confirmation!", "Are you sure wanna delete " + category.getName() + "Category?", null).get() == ButtonType.OK){
+
+            if(Category.deleteCategory(category)){
+                AlertTools.AlertInformation("Success!", "Category Succesfully Deleted!", "The category has been deleted.");
+            }else{
+                AlertTools.AlertError("Error!", "Category Deletion Failed!", "The category could not be deleted.");
+            }
+
+            table.getItems().remove(category);
+        }   
+       
     }
 
     @FXML
     void detailsBtn(ActionEvent event) {
+        Category category = table.getSelectionModel().getSelectedItem();
 
+        if(category == null){
+            AlertTools.AlertInformation("Error!", "No Category Selected!", "Please select a category to edit.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/category-details-page.fxml"));
+
+            Parent root = loader.load();
+
+            CategoryDetailController categoryDetailController = loader.getController();
+
+            categoryDetailController.setCategory(category);
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            Scene scene = new Scene(root);
+
+            stage.setScene(scene);
+
+            stage.show();
+
+            BackBtnTools.addToBackBtnStack("../view/categories-page.fxml");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     void editBtn(ActionEvent event) {
+        Category category = table.getSelectionModel().getSelectedItem();
 
-    }
+        if(category == null){
+            AlertTools.AlertInformation("Error!", "No Category Selected!", "Please select a category to edit.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/category-edit-page.fxml"));
+
+            Parent root = loader.load();
+
+            CategoryEditController categoryEditController = loader.getController();
+
+            categoryEditController.setCategory(category);
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            Scene scene = new Scene(root);
+
+            stage.setScene(scene);
+
+            stage.show();
+
+            BackBtnTools.addToBackBtnStack("../view/categories-page.fxml");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }   
 
     @FXML
     void searchBtn(ActionEvent event) {
