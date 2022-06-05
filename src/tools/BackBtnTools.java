@@ -47,9 +47,6 @@ public class BackBtnTools {
      * @param event the event of the scene
      */
     public static void backBtnActionEvent(ActionEvent event) {
-
         SwitchSceneTools.changeSceneActionEvent(event, getLastScene());
-
-        System.out.println(backBtnStack);
     }
 }
