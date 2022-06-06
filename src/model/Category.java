@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import tools.AlertTools;
 import tools.DatabaseTools;
 
 public class Category {

@@ -9,18 +9,24 @@ public class Book {
     private SimpleStringProperty name;
     private SimpleStringProperty categoryName;
     private Category category;
+    private SimpleStringProperty availability;
+    private SimpleStringProperty purchaseDate;
     private SimpleDoubleProperty boughtPrice;
     private SimpleIntegerProperty purchasing_id;
 
-    public Book(int id, String name,Category category, double boughtPrice, int purchasing_id) {
+    // Book Controller
+    public Book(int id, String name, Category category, int availability, String purchaseDate, double boughtPrice, int purchasing_id) {
         this.id = new SimpleIntegerProperty(id);
         this.name = new SimpleStringProperty(name);
         this.category = category;
         this.categoryName = new SimpleStringProperty(category.getName());
+        this.availability = new SimpleStringProperty((availability == 0) ? "No" : "Yes");
+        this.purchaseDate = new SimpleStringProperty(purchaseDate);
         this.boughtPrice = new SimpleDoubleProperty(boughtPrice);
         this.purchasing_id = new SimpleIntegerProperty(purchasing_id);
     }
 
+    // Purchase Add Controller
     public Book(String name,Category category, double boughtPrice) {
         this.name = new SimpleStringProperty(name);
         this.category = category;
@@ -95,5 +101,28 @@ public class Book {
     public void setPurchasing_id(int purchasing_id) {
         this.purchasing_id.set(purchasing_id);
     }
-    
+
+    public String getAvailability() {
+        return availability.get();
+    }
+
+    public SimpleStringProperty availabilityProperty() {
+        return availability;
+    }
+
+    public void setAvailability(String availability) {
+        this.availability.set(availability);
+    }
+
+    public String getpurchaseDate() {
+        return purchaseDate.get();
+    }
+
+    public SimpleStringProperty purchaseDateProperty() {
+        return purchaseDate;
+    }
+
+    public void setpurchaseDate(String purchaseDate) {
+        this.purchaseDate.set(purchaseDate);
+    }
 }
