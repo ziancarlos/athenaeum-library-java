@@ -8,26 +8,28 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LibarianController">
    <children>
       <Text layoutX="21.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Libarians">
          <font>
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
-      <Button layoutX="515.0" layoutY="22.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="64.0" text="Back" />
-      <Button layoutX="21.0" layoutY="65.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Add" />
-      <TableView layoutX="21.0" layoutY="100.0" prefHeight="237.0" prefWidth="559.0">
+      <Button layoutX="515.0" layoutY="22.0" mnemonicParsing="false" onAction="#backBtn" prefHeight="32.0" prefWidth="64.0" text="Back" />
+      <Button layoutX="21.0" layoutY="65.0" mnemonicParsing="false" onAction="#addBtn" prefHeight="25.0" prefWidth="58.0" text="Add" />
+      <TableView fx:id="table" layoutX="21.0" layoutY="100.0" prefHeight="237.0" prefWidth="559.0">
          <columns>
-            <TableColumn prefWidth="38.0" text="ID" />
-            <TableColumn prefWidth="178.0" text="Username" />
-            <TableColumn prefWidth="218.0" text="Password" />
-            <TableColumn prefWidth="124.0" text="Active" />
+            <TableColumn fx:id="idCol" prefWidth="38.0" text="ID" />
+            <TableColumn fx:id="usernameCol" prefWidth="178.0" text="Username" />
+            <TableColumn fx:id="passwordCol" prefWidth="218.0" text="Password" />
+            <TableColumn fx:id="activeCol" prefWidth="124.0" text="Active" />
          </columns>
       </TableView>
-      <Button layoutX="85.0" layoutY="65.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Edit" />
-      <Button layoutX="150.0" layoutY="65.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="73.0" text="Deactivate" />
-      <Button layoutX="524.0" layoutY="65.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="56.0" text="Search" />
-      <TextField layoutX="369.0" layoutY="65.0" prefHeight="25.0" prefWidth="144.0" />
+      <Button layoutX="85.0" layoutY="65.0" mnemonicParsing="false" onAction="#editBtn" prefHeight="25.0" prefWidth="58.0" text="Edit" />
+      <Button layoutX="228.0" layoutY="65.0" mnemonicParsing="false" onAction="#deactivateBtn" prefHeight="25.0" prefWidth="73.0" text="Deactivate" />
+      <Button layoutX="524.0" layoutY="65.0" mnemonicParsing="false" onAction="#searchBtn" prefHeight="25.0" prefWidth="56.0" text="Search" />
+      <TextField fx:id="searchTf" layoutX="369.0" layoutY="65.0" prefHeight="25.0" prefWidth="144.0" />
+      <Button layoutX="149.0" layoutY="65.0" mnemonicParsing="false" onAction="#activateBtn" prefHeight="25.0" prefWidth="73.0" text="Activate" />
+      <Button layoutX="506.0" layoutY="344.0" mnemonicParsing="false" onAction="#refreshBtn" prefHeight="25.0" prefWidth="73.0" text="Refresh" />
    </children>
 </AnchorPane>

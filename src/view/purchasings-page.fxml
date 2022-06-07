@@ -18,8 +18,7 @@
       </Text>
       <Button layoutX="515.0" layoutY="22.0" mnemonicParsing="false" onAction="#backBtn" prefHeight="32.0" prefWidth="64.0" text="Back" />
       <Button layoutX="21.0" layoutY="308.0" mnemonicParsing="false" onAction="#newPurchasingBtn" text="New Purchasing" />
-      <Button layoutX="131.0" layoutY="308.0" mnemonicParsing="false" onAction="#editPurchasingBtn" text="Edit Purchasing" />
-      <Button layoutX="238.0" layoutY="308.0" mnemonicParsing="false" onAction="#purchasingDetailBtn" text="Purchasing Details" />
+      <Button layoutX="129.0" layoutY="308.0" mnemonicParsing="false" onAction="#purchasingDetailBtn" text="Purchasing Details" />
       <TableView fx:id="table" layoutX="21.0" layoutY="100.0" prefHeight="200.0" prefWidth="559.0">
         <columns>
           <TableColumn fx:id="idCol" prefWidth="38.0" text="ID" />
@@ -30,8 +29,9 @@
         </columns>
       </TableView>
       <Button layoutX="524.0" layoutY="67.0" mnemonicParsing="false" onAction="#searchBtn" prefHeight="25.0" prefWidth="56.0" text="Search" />
-      <TextField fx:id="searchTf" layoutX="372.0" layoutY="67.0" prefHeight="25.0" prefWidth="144.0" />
-      <DatePicker fx:id="startDatePicker" layoutX="21.0" layoutY="67.0" onAction="#startDate" prefHeight="25.0" prefWidth="114.0" />
-      <DatePicker fx:id="endDatePicker" layoutX="147.0" layoutY="67.0" onAction="#endDate" prefHeight="25.0" prefWidth="114.0" />
+      <TextField fx:id="searchTf" layoutX="273.0" layoutY="67.0" prefHeight="25.0" prefWidth="144.0" />
+      <DatePicker fx:id="startDatePicker" layoutX="21.0" layoutY="67.0" prefHeight="25.0" prefWidth="114.0" />
+      <DatePicker fx:id="endDatePicker" layoutX="147.0" layoutY="67.0" prefHeight="25.0" prefWidth="114.0" />
+      <Button layoutX="524.0" layoutY="308.0" mnemonicParsing="false" onAction="#refreshBtn" text="Refresh" />
    </children>
 </AnchorPane>

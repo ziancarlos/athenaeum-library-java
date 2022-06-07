@@ -29,5 +29,6 @@
       </TableView>
       <Button layoutX="419.0" layoutY="181.0" mnemonicParsing="false" onAction="#deleteBtn" prefHeight="25.0" prefWidth="167.0" text="Delete" />
       <Button layoutX="419.0" layoutY="219.0" mnemonicParsing="false" onAction="#detailsBtn" prefHeight="25.0" prefWidth="167.0" text="Details" />
+      <Button layoutX="419.0" layoutY="258.0" mnemonicParsing="false" onAction="#refreshBtn" prefHeight="25.0" prefWidth="167.0" text="Refresh" />
    </children>
 </AnchorPane>
