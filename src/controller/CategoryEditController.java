@@ -22,49 +22,51 @@ public class CategoryEditController {
 
     @FXML
     void editBtn(ActionEvent event) {
-        if(ValidationTools.isTextFieldEmptyOrNull(categoryNameTf)){
-            AlertTools.AlertError("Error!", "Category Name Text Field Is Empty!", "Please Fill Category Name Text Field!");
+        if (ValidationTools.isTextFieldEmptyOrNull(categoryNameTf)) {
+            AlertTools.AlertError("Error!", "Category Name Text Field Is Empty!",
+                    "Please Fill Category Name Text Field!");
 
-            defaultTf();
+            setDefaultTf();
 
             return;
         }
 
-        if(category.getName().equals(categoryNameTf.getText())){
+        if (category.getName().equals(categoryNameTf.getText())) {
             AlertTools.AlertError("Error!", "Category Name Is Not Changed", null);
 
-            defaultTf();
+            setDefaultTf();
 
             return;
         }
-        
-        if(Category.isCategoryNameExist(categoryNameTf.getText(), category.getId())){
+
+        if (Category.isCategoryNameExist(categoryNameTf.getText(), category.getId())) {
             AlertTools.AlertError("Error!", "Category Name Is Already Exist!", "Please Enter Another Category Name!");
 
-            defaultTf();
+            setDefaultTf();
 
             return;
         }
 
-        if(Category.editCategory(category, categoryNameTf.getText())){
-            AlertTools.AlertInformation("Success!", "Category Edited Successfully!", "Category Name: " + categoryNameTf.getText());
+        if (Category.editCategory(category, categoryNameTf.getText())) {
+            AlertTools.AlertInformation("Success!", "Category Edited Successfully!",
+                    "Category Name: " + categoryNameTf.getText());
 
             BackBtnTools.backBtnActionEvent(event);
-        }else{
+        } else {
             AlertTools.AlertError("Error!", "Category Not Edited!", "Please Try Again!");
 
-            defaultTf();
+            setDefaultTf();
         }
 
     }
 
-    public void setCategory(Category category){
+    public void setCategory(Category category) {
         this.category = category;
 
-        defaultTf();
+        setDefaultTf();
     }
 
-    public void defaultTf(){
+    public void setDefaultTf() {
         categoryNameTf.setText(category.getName());
     }
 
