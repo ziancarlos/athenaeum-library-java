@@ -21,6 +21,7 @@ import tools.AlertTools;
 import tools.BackBtnTools;
 import tools.DatabaseTools;
 import tools.SwitchSceneTools;
+import tools.UiTools;
 import tools.ValidationTools;
 import javafx.scene.Node;
 
@@ -51,22 +52,7 @@ public class CustomerController {
         phoneNumberCol.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
         blacklistedCol.setCellValueFactory(new PropertyValueFactory<>("blacklisted"));
 
-        try {
-            Connection connection = DatabaseTools.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM users WHERE role = 'user'");
-
-            while (resultSet.next()) {
-                table.getItems()
-                        .add(new User(resultSet.getInt("id"), resultSet.getString("username"),
-                                resultSet.getString("password"), resultSet.getString("role"),
-                                resultSet.getString("phone_number"), resultSet.getString("created_at")));
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        setTable();
     }
 
     @FXML
@@ -96,6 +82,7 @@ public class CustomerController {
 
             DatabaseTools.closeQueryOperationWithPreparedStatement(connection, statement, resultSet);
 
+            UiTools.setTextFieldEmpty(searchTf);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -179,6 +166,33 @@ public class CustomerController {
         } else {
             AlertTools.AlertConfirmation("Error", "No User Selected!", "Please select valid user!");
         }
+    }
+
+    @FXML
+    void refreshBtn(ActionEvent event) {
+        setTable();
+
+        UiTools.setTextFieldEmpty(searchTf);
+    }
+
+    private void setTable() {
+        table.getItems().clear();
+        try {
+            Connection connection = DatabaseTools.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM users WHERE role = 'user'");
+
+            while (resultSet.next()) {
+                table.getItems()
+                        .add(new User(resultSet.getInt("id"), resultSet.getString("username"),
+                                resultSet.getString("password"), resultSet.getString("role"),
+                                resultSet.getString("phone_number"), resultSet.getString("created_at")));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
