@@ -8,6 +8,7 @@ import java.sql.SQLException;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import tools.AlertTools;
 import tools.DatabaseTools;
 
 public class User {
@@ -18,6 +19,7 @@ public class User {
     private SimpleStringProperty phoneNumber;
     private SimpleStringProperty date;
     private SimpleStringProperty blacklisted;
+    private SimpleIntegerProperty active;
 
     public User(int id, String username, String password, String role, String phoneNumber, String date) {
 
@@ -28,6 +30,7 @@ public class User {
         this.phoneNumber = new SimpleStringProperty(phoneNumber);
         this.date = new SimpleStringProperty(date);
         this.blacklisted = new SimpleStringProperty("");
+        this.active = new SimpleIntegerProperty(0);
         // check role
         if (this.getRole().equals("user")) {
             Connection connection = DatabaseTools.getConnection();
@@ -50,7 +53,7 @@ public class User {
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+                AlertTools.AlertErrorContactSupport();
             }
 
         } else {
@@ -115,6 +118,14 @@ public class User {
         this.blacklisted.set(blacklisted);
     }
 
+    public int getActive() {
+        return active.get();
+    }
+
+    public void setActive(int active) {
+        this.active.set(active);
+    }
+
     /**
      * change password for the given id
      * 
@@ -143,7 +154,7 @@ public class User {
             DatabaseTools.closeQueryOperation(connection, preparedStatement);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            AlertTools.AlertErrorContactSupport();
         }
 
         return false;
@@ -204,7 +215,61 @@ public class User {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            AlertTools.AlertErrorContactSupport();
+        }
+
+        return false;
+    }
+
+    public static boolean addCustomer(String username, String password, String phoneNumber) {
+        String sql = "INSERT INTO users (username, password, role, phone_number, created_at) VALUES (?, ?, 'user', ?, NOW())";
+
+        try {
+            Connection connection = DatabaseTools.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, password);
+            preparedStatement.setString(3, phoneNumber);
+
+            int affectedRows = preparedStatement.executeUpdate();
+
+            if (affectedRows > 0) {
+                DatabaseTools.closeQueryOperationWithPreparedStatement(connection, preparedStatement);
+                return true;
+            } else {
+                DatabaseTools.closeQueryOperationWithPreparedStatement(connection, preparedStatement);
+            }
+
+        } catch (Exception e) {
+            AlertTools.AlertErrorContactSupport();
+        }
+
+        return false;
+    }
+
+    public static boolean addLibarian(String username, String password, String phoneNumber) {
+        String sql = "INSERT INTO users (username, password, role, phone_number, active ,created_at) VALUES (?, ?, 'libarian', ?, 1,NOW())";
+
+        try {
+            Connection connection = DatabaseTools.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, password);
+            preparedStatement.setString(3, phoneNumber);
+
+            int affectedRows = preparedStatement.executeUpdate();
+
+            if (affectedRows > 0) {
+                DatabaseTools.closeQueryOperationWithPreparedStatement(connection, preparedStatement);
+                return true;
+            } else {
+                DatabaseTools.closeQueryOperationWithPreparedStatement(connection, preparedStatement);
+            }
+
+        } catch (Exception e) {
+            AlertTools.AlertErrorContactSupport();
         }
 
         return false;
