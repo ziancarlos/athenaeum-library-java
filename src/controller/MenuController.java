@@ -62,5 +62,16 @@ public class MenuController {
         BackBtnTools.addToBackBtnStack("../view/menu-page.fxml");
     }
 
+    @FXML
+    void libarianBtn(ActionEvent event) {
+        if (CurrentUser.currentUser.getRole().equals("user")) {
+            AlertTools.AlertError("Error!", "You dont have permission to access this page!", null);
+            return;
+        }
+
+        SwitchSceneTools.changeSceneActionEvent(event, "../view/libarians-page.fxml");
+
+        BackBtnTools.addToBackBtnStack("../view/menu-page.fxml");
+    }
 
 }
