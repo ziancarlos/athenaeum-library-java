@@ -16,6 +16,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import model.Category;
 import tools.DatabaseTools;
 import tools.SwitchSceneTools;
+import tools.UiTools;
 import tools.ValidationTools;
 import tools.AlertTools;
 import tools.BackBtnTools;
@@ -42,27 +43,12 @@ public class CategoryController {
     @FXML
     private TableView<Category> table;
 
-    public void initialize(){
-
+    public void initialize() {
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         connectedBooks.setCellValueFactory(new PropertyValueFactory<>("connectedBooks"));
 
-        try{
-            Connection connection = DatabaseTools.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT categories.id, categories.name, COUNT(books.id) AS connectedBooks FROM categories LEFT JOIN books ON categories.id = books.category_id GROUP BY categories.id;");
-            
-            while(resultSet.next()){
-                Category category = new Category(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getInt("connectedBooks"));
-                table.getItems().add(category);
-            }
-
-            DatabaseTools.closeQueryOperation(connection, statement, resultSet);
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        setTable();
     }
 
     @FXML
@@ -81,35 +67,37 @@ public class CategoryController {
     void deleteBtn(ActionEvent event) {
         Category category = table.getSelectionModel().getSelectedItem();
 
-        if(category == null){
+        if (category == null) {
             AlertTools.AlertInformation("Error!", "No Category Selected!", "Please select a category to delete.");
             return;
         }
 
-        if(category.getConnectedBooks() > 0){
+        if (category.getConnectedBooks() > 0) {
             AlertTools.AlertError("Error!", "This Category Is Connected To Books!", null);
-            
+
             return;
         }
 
-        if(AlertTools.AlertConfirmation("Confirmation!", "Are you sure wanna delete " + category.getName() + "Category?", null).get() == ButtonType.OK){
+        if (AlertTools.AlertConfirmation("Confirmation!",
+                "Are you sure wanna delete " + category.getName() + "Category?", null).get() == ButtonType.OK) {
 
-            if(Category.deleteCategory(category)){
-                AlertTools.AlertInformation("Success!", "Category Succesfully Deleted!", "The category has been deleted.");
-            }else{
+            if (Category.deleteCategory(category)) {
+                AlertTools.AlertInformation("Success!", "Category Succesfully Deleted!",
+                        "The category has been deleted.");
+            } else {
                 AlertTools.AlertError("Error!", "Category Deletion Failed!", "The category could not be deleted.");
             }
 
             table.getItems().remove(category);
-        }   
-       
+        }
+
     }
 
     @FXML
     void detailsBtn(ActionEvent event) {
         Category category = table.getSelectionModel().getSelectedItem();
 
-        if(category == null){
+        if (category == null) {
             AlertTools.AlertInformation("Error!", "No Category Selected!", "Please select a category to edit.");
             return;
         }
@@ -134,7 +122,7 @@ public class CategoryController {
             BackBtnTools.addToBackBtnStack("../view/categories-page.fxml");
 
         } catch (IOException e) {
-            e.printStackTrace();
+            AlertTools.AlertErrorContactSupport();
         }
     }
 
@@ -142,7 +130,7 @@ public class CategoryController {
     void editBtn(ActionEvent event) {
         Category category = table.getSelectionModel().getSelectedItem();
 
-        if(category == null){
+        if (category == null) {
             AlertTools.AlertInformation("Error!", "No Category Selected!", "Please select a category to edit.");
             return;
         }
@@ -167,35 +155,66 @@ public class CategoryController {
             BackBtnTools.addToBackBtnStack("../view/categories-page.fxml");
 
         } catch (IOException e) {
-            e.printStackTrace();
+            AlertTools.AlertErrorContactSupport();
         }
-    }   
+    }
 
     @FXML
     void searchBtn(ActionEvent event) {
-        if(ValidationTools.isTextFieldEmptyOrNull(searchTf)){
+        if (ValidationTools.isTextFieldEmptyOrNull(searchTf)) {
             AlertTools.AlertError("Error!", "Please Enter A Search Term!", null);
             return;
         }
 
-
         table.getItems().clear();
 
-        try{
+        try {
             Connection connection = DatabaseTools.getConnection();
-            PreparedStatement statement = connection.prepareStatement("SELECT categories.id, categories.name, COUNT(books.id) AS connectedBooks FROM categories LEFT JOIN books ON categories.id = books.category_id WHERE categories.name LIKE ? GROUP BY categories.id;");
-            statement.setString(1, "%" +searchTf.getText() + "%");
+            PreparedStatement statement = connection.prepareStatement(
+                    "SELECT categories.id, categories.name, COUNT(books.id) AS connectedBooks FROM categories LEFT JOIN books ON categories.id = books.category_id WHERE categories.name LIKE ? GROUP BY categories.id;");
+            statement.setString(1, "%" + searchTf.getText() + "%");
             ResultSet resultSet = statement.executeQuery();
 
-            while(resultSet.next()){
-                Category category = new Category(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getInt("connectedBooks"));
+            while (resultSet.next()) {
+                Category category = new Category(resultSet.getInt("id"), resultSet.getString("name"),
+                        resultSet.getInt("connectedBooks"));
                 table.getItems().add(category);
             }
 
             DatabaseTools.closeQueryOperation(connection, statement, resultSet);
 
-        }catch(Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
+            AlertTools.AlertErrorContactSupport();
+        }
+
+        UiTools.setTextFieldEmpty(searchTf);
+    }
+
+    @FXML
+    void refreshBtn(ActionEvent event) {
+        setTable();
+
+        UiTools.setTextFieldEmpty(searchTf);
+    }
+
+    private void setTable() {
+        table.getItems().clear();
+        try {
+            Connection connection = DatabaseTools.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(
+                    "SELECT categories.id, categories.name, COUNT(books.id) AS connectedBooks FROM categories LEFT JOIN books ON categories.id = books.category_id GROUP BY categories.id;");
+
+            while (resultSet.next()) {
+                Category category = new Category(resultSet.getInt("id"), resultSet.getString("name"),
+                        resultSet.getInt("connectedBooks"));
+                table.getItems().add(category);
+            }
+
+            DatabaseTools.closeQueryOperation(connection, statement, resultSet);
+
+        } catch (Exception e) {
+            AlertTools.AlertErrorContactSupport();
         }
     }
 
