@@ -1,8 +1,13 @@
 package model;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import tools.AlertTools;
+import tools.DatabaseTools;
 
 public class Book {
     private SimpleIntegerProperty id;
@@ -15,7 +20,8 @@ public class Book {
     private SimpleIntegerProperty purchasing_id;
 
     // Book Controller
-    public Book(int id, String name, Category category, int availability, String purchaseDate, double boughtPrice, int purchasing_id) {
+    public Book(int id, String name, Category category, int availability, String purchaseDate, double boughtPrice,
+            int purchasing_id) {
         this.id = new SimpleIntegerProperty(id);
         this.name = new SimpleStringProperty(name);
         this.category = category;
@@ -27,11 +33,16 @@ public class Book {
     }
 
     // Purchase Add Controller
-    public Book(String name,Category category, double boughtPrice) {
+    public Book(String name, Category category, double boughtPrice) {
         this.name = new SimpleStringProperty(name);
         this.category = category;
         this.categoryName = new SimpleStringProperty(category.getName());
         this.boughtPrice = new SimpleDoubleProperty(boughtPrice);
+    }
+
+    public Book(int id, String name) {
+        this.id = new SimpleIntegerProperty(id);
+        this.name = new SimpleStringProperty(name);
     }
 
     public int getId() {
@@ -124,5 +135,32 @@ public class Book {
 
     public void setpurchaseDate(String purchaseDate) {
         this.purchaseDate.set(purchaseDate);
+    }
+
+    public static boolean editBook(Book book, String newName, Category newCategory) {
+        try {
+            Connection connection = DatabaseTools.getConnection();
+            PreparedStatement preparedStatement = connection
+                    .prepareStatement("UPDATE books SET name = ?, category_id = ?  WHERE id = ?");
+            preparedStatement.setString(1, newName);
+            preparedStatement.setInt(2, newCategory.getId());
+
+            preparedStatement.setInt(3, book.getId());
+
+            int affectedRows = preparedStatement.executeUpdate();
+
+            if (affectedRows > 0) {
+                book.setName(newName);
+                book.setCategory(newCategory);
+
+                return true;
+            }
+
+            DatabaseTools.closeQueryOperation(connection, preparedStatement);
+        } catch (Exception e) {
+            AlertTools.AlertErrorContactSupport();
+        }
+
+        return false;
     }
 }
