@@ -31,7 +31,7 @@ public class CustomerEditController {
         if (ValidationTools.isTextFieldEmptyOrNull(usernameTf, passwordTf, phoneNumberTf)) {
             AlertTools.AlertError("Error!", "Text field consist of blank!", "Please fill in all text field!");
 
-            defaultTf();
+            setDefaultTf();
 
             return;
         }
@@ -41,7 +41,7 @@ public class CustomerEditController {
         if (password.equals(user.getPassword())) {
             AlertTools.AlertError("Error!", "Password is not change!", null);
 
-            defaultTf();
+            setDefaultTf();
 
             return;
         }
@@ -49,7 +49,7 @@ public class CustomerEditController {
         if (password.length() < 8) {
             AlertTools.AlertError("Error!", "Password is not valid!", "Please enter a valid password!");
 
-            defaultTf();
+            setDefaultTf();
 
             return;
         }
@@ -61,20 +61,17 @@ public class CustomerEditController {
         } else {
             AlertTools.AlertError("Error!", "Password is not changed!", null);
 
-            defaultTf();
+            setDefaultTf();
         }
-
-        System.out.println(user.getPassword());
-
     }
 
     void setUser(User user) {
         this.user = user;
 
-        defaultTf();
+        setDefaultTf();
     }
 
-    private void defaultTf() {
+    private void setDefaultTf() {
         usernameTf.setText(user.getUsername());
         passwordTf.setText(user.getPassword());
         phoneNumberTf.setText(user.getPhoneNumber());
