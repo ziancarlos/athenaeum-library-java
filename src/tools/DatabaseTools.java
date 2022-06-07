@@ -33,9 +33,9 @@ public class DatabaseTools {
             databasePassword = properties.getProperty("database.password");
 
         } catch (FileNotFoundException exception) {
-            System.err.println("Gagal Load File Dari Url");
+            AlertTools.AlertErrorContactSupport();
         } catch (IOException exception) {
-            System.err.println("Gagal Load Data Dari Url");
+            AlertTools.AlertErrorContactSupport();
         }
 
         try {
@@ -43,7 +43,7 @@ public class DatabaseTools {
             DriverManager.registerDriver(mysqlDriver);
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (Exception e) {
-            System.out.println("Driver not found");
+            AlertTools.AlertErrorContactSupport();
         }
 
         java.sql.Connection conn = null;
@@ -51,7 +51,7 @@ public class DatabaseTools {
             conn = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/" + databaseName, databaseUsername,
                     databasePassword);
         } catch (Exception e) {
-            System.err.println("Connection To Database Error");
+            AlertTools.AlertErrorContactSupport();
         }
         return conn;
     }
@@ -70,7 +70,7 @@ public class DatabaseTools {
             statement.close();
             resultSet.close();
         } catch (SQLException e) {
-            System.err.println("Connection Close Error");
+            AlertTools.AlertErrorContactSupport();
         }
     }
 
@@ -86,7 +86,7 @@ public class DatabaseTools {
             conn.close();
             statement.close();
         } catch (SQLException e) {
-            System.err.println("Connection Close Error");
+            AlertTools.AlertErrorContactSupport();
         }
     }
 
@@ -105,7 +105,7 @@ public class DatabaseTools {
             statement.close();
             resultSet.close();
         } catch (SQLException e) {
-            System.err.println("Connection Close Error");
+            AlertTools.AlertErrorContactSupport();
         }
     }
 
@@ -121,7 +121,7 @@ public class DatabaseTools {
             conn.close();
             statement.close();
         } catch (SQLException e) {
-            System.err.println("Connection Close Error");
+            AlertTools.AlertErrorContactSupport();
         }
     }
 

@@ -54,5 +54,13 @@ public class AlertTools {
         return alert.showAndWait();
     }
 
-   
+    public static void AlertErrorContactSupport() {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Error!");
+        alert.setHeaderText("Contact Support!");
+        alert.setContentText("Please contact support!");
+
+        alert.showAndWait();
+    }
+
 }

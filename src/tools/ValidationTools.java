@@ -2,6 +2,9 @@ package tools;
 
 import javafx.scene.control.TextField;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class ValidationTools {
     /**
      * check text field is empty or null
@@ -45,7 +48,6 @@ public class ValidationTools {
         }
     }
 
-
     public static boolean isDouble(String str) {
         try {
             Double.parseDouble(str);
@@ -53,5 +55,37 @@ public class ValidationTools {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    public static boolean isDateOlderThanOneDay(String purchasingDate) {
+        String[] splittedPurchasingDate = purchasingDate.split("-");
+        String year = splittedPurchasingDate[0];
+        String month = splittedPurchasingDate[1];
+        String day = splittedPurchasingDate[2];
+
+        String[] splittedToday = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString().split("-");
+
+        String todayYear = splittedToday[0];
+        String todayMonth = splittedToday[1];
+        String todayDay = splittedToday[2];
+
+        if (Integer.parseInt(year) < Integer.parseInt(todayYear)) {
+            return true;
+        } else if (Integer.parseInt(year) == Integer.parseInt(todayYear)) {
+            if (Integer.parseInt(month) < Integer.parseInt(todayMonth)) {
+                return true;
+            } else if (Integer.parseInt(month) == Integer.parseInt(todayMonth)) {
+                if (Integer.parseInt(day) < Integer.parseInt(todayDay)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
     }
 }
