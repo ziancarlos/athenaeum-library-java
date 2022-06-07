@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import tools.AlertTools;
 import tools.DatabaseTools;
 
 public class Category {
@@ -22,7 +23,7 @@ public class Category {
     public Category(int id, String name) {
         this.id = new SimpleIntegerProperty(id);
         this.name = new SimpleStringProperty(name);
-    }   
+    }
 
     public int getId() {
         return id.get();
@@ -47,31 +48,31 @@ public class Category {
     public void setConnectedBooks(int connectedBooks) {
         this.connectedBooks.set(connectedBooks);
     }
-    
+
     /**
      * Check if category name exist in the database
      * 
-     * @param name  name to be checked
+     * @param name name to be checked
      * @return return true if exist
      */
-    public static boolean isCategoryNameExist(String name){
-        try{
+    public static boolean isCategoryNameExist(String name) {
+        try {
             Connection connection = DatabaseTools.getConnection();
 
             String sql = "SELECT * FROM categories WHERE name = ?";
 
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, name);
-    
+
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            if(resultSet.next()){
+            if (resultSet.next()) {
                 return true;
             }
 
             DatabaseTools.closeQueryOperation(connection, preparedStatement, resultSet);
-        }catch(Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
+            AlertTools.AlertErrorContactSupport();
         }
 
         return false;
@@ -80,11 +81,11 @@ public class Category {
     /**
      * check name if category exist, exclude the given id
      * 
-     * @param name  name to be checked
+     * @param name name to be checked
      * @return return true if exist
      */
-    public static boolean isCategoryNameExist(String name, int id){
-        try{
+    public static boolean isCategoryNameExist(String name, int id) {
+        try {
             Connection connection = DatabaseTools.getConnection();
 
             String sql = "SELECT * FROM categories WHERE name = ? AND id != ?";
@@ -92,16 +93,16 @@ public class Category {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, name);
             preparedStatement.setInt(2, id);
-    
+
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            if(resultSet.next()){
+            if (resultSet.next()) {
                 return true;
             }
 
             DatabaseTools.closeQueryOperation(connection, preparedStatement, resultSet);
-        }catch(Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
+            AlertTools.AlertErrorContactSupport();
         }
 
         return false;
@@ -111,9 +112,9 @@ public class Category {
      * edit the given category with the new name
      * 
      * @param category the row of category to be edited
-     * @param newName the given new name
+     * @param newName  the given new name
      * @return return true if success
-    */
+     */
     public static boolean editCategory(Category category, String newName) {
         try {
             Connection connection = DatabaseTools.getConnection();
@@ -136,18 +137,18 @@ public class Category {
             DatabaseTools.closeQueryOperation(connection, preparedStatement);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            AlertTools.AlertErrorContactSupport();
         }
 
         return false;
     }
 
-     /**
+    /**
      * add new category
      * 
      * @param name the given name
      * @return return true if success
-    */
+     */
     public static boolean addCategory(String name) {
         try {
             Connection connection = DatabaseTools.getConnection();
@@ -167,18 +168,18 @@ public class Category {
             DatabaseTools.closeQueryOperation(connection, preparedStatement);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            AlertTools.AlertErrorContactSupport();
         }
 
         return false;
     }
 
-     /**
+    /**
      * delete the given category
      * 
      * @param category the row of category to be deleted
      * @return return true if success
-    */
+     */
     public static boolean deleteCategory(Category category) {
         try {
             Connection connection = DatabaseTools.getConnection();
@@ -198,7 +199,7 @@ public class Category {
             DatabaseTools.closeQueryOperation(connection, preparedStatement);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            AlertTools.AlertErrorContactSupport();
         }
 
         return false;
