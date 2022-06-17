@@ -1,14 +1,12 @@
 package controller;
 
-import java.util.LinkedList;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import model.User;
-import tools.BackBtnTools;
+import model.Customer;
+import tools.BackBtn;
 
 public class CustomerDetailController {
 
@@ -25,38 +23,33 @@ public class CustomerDetailController {
     private ListView<String> listView;
 
     @FXML
-    private TableColumn<?, ?> returnedCol;
+    private TableColumn<?, ?> statusCol;
 
     @FXML
-    private TableView<String> table;
+    private TableView<?> table;
 
-    private LinkedList<String> list = new LinkedList<String>();
-
-    private User user;
+    private Customer customer;
 
     @FXML
-    void backBtn(ActionEvent event) {
-        BackBtnTools.backBtnActionEvent(event);
+    void backOnAction(ActionEvent event) {
+        BackBtn.backBtnActionEvent(event);
     }
 
-    void setUser(User user) {
-        this.user = user;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
 
-        setTableView();
+        setLv();
     }
 
-    private void setTableView() {
+    private void setLv() {
         listView.getItems().clear();
-        list.clear();
 
-        list.add("Username : " + user.getUsername());
-        list.add("Password : " + user.getPassword());
-        list.add("Phone Number : " + user.getPhoneNumber());
-        list.add("Role : " + user.getRole());
-        list.add("Blacklisted : " + user.getBlacklisted());
-        list.add("Created At : " + user.getDate());
+        listView.getItems().add("Username : " + customer.getUsername());
+        listView.getItems().add("Phone number : " + customer.getPhoneNumber());
+        listView.getItems().add("Role : " + customer.getRole());
+        listView.getItems().add("Created at : " + customer.getCreatedAt());
+        listView.getItems().add("Blacklisted : " + customer.getBlacklisted());
 
-        listView.getItems().addAll(list);
     }
 
 }
