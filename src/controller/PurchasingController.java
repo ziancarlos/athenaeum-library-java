@@ -4,92 +4,120 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import model.Purchasing;
+import model.PurchasingDetail;
 import tools.AlertTools;
-import tools.BackBtnTools;
+import tools.BackBtn;
 import tools.DatabaseTools;
 import tools.SwitchSceneTools;
 import tools.UiTools;
 import tools.ValidationTools;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.Node;
+import javafx.fxml.FXMLLoader;
 
 public class PurchasingController {
-
-    @FXML
-    private DatePicker startDatePicker;
 
     @FXML
     private DatePicker endDatePicker;
 
     @FXML
-    private TableColumn<Purchasing, Integer> idCol;
+    private TableColumn<?, ?> idCol;
 
     @FXML
-    private TableColumn<Purchasing, String> purchasingDate;
-
-    @FXML
-    private TableColumn<Purchasing, String> supplierNameCol;
-
-    @FXML
-    private TableView<Purchasing> table;
-
-    @FXML
-    private TableColumn<Purchasing, Double> totalAmountCol;
-
-    @FXML
-    private TableColumn<Purchasing, String> totalBooksBoughtCol;
+    private TableColumn<?, ?> purchasingDate;
 
     @FXML
     private TextField searchTf;
+
+    @FXML
+    private DatePicker startDatePicker;
+
+    @FXML
+    private TableColumn<?, ?> supplierNameCol;
+
+    @FXML
+    private TableView<PurchasingDetail> table;
+
+    @FXML
+    private TableColumn<?, ?> totalAmountCol;
+
+    @FXML
+    private TableColumn<?, ?> totalBooksBoughtCol;
 
     public void initialize() {
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         purchasingDate.setCellValueFactory(new PropertyValueFactory<>("purchasingDate"));
         supplierNameCol.setCellValueFactory(new PropertyValueFactory<>("supplierName"));
         totalAmountCol.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
-        totalBooksBoughtCol.setCellValueFactory(new PropertyValueFactory<>("totalBooksBought"));
+        totalBooksBoughtCol.setCellValueFactory(new PropertyValueFactory<>("totalBooks"));
 
-        refreshTable();
+        setTable();
+    }
+
+    private void setTable() {
+        table.getItems().clear();
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseTools.getConnection();
+            statement = connection.prepareStatement("SELECT * FROM purchasings_details ");
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                PurchasingDetail purchasingDetail = new PurchasingDetail(resultSet.getInt("id"),
+                        resultSet.getString("supplier_name"), resultSet.getInt("total_books"),
+                        resultSet.getDouble("total_amount"), resultSet.getString("payment_date"));
+                table.getItems().add(purchasingDetail);
+            }
+        } catch (Exception e) {
+            AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (statement != null)
+                    statement.close();
+                if (resultSet != null)
+                    resultSet.close();
+            } catch (SQLException e) {
+                AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+            }
+        }
     }
 
     @FXML
-    void refreshBtn(ActionEvent event) {
-        refreshTable();
-
-        setSearchForm();
+    void backOnAction(ActionEvent event) {
+        BackBtn.backBtnActionEvent(event);
     }
 
     @FXML
-    void backBtn(ActionEvent event) {
-        BackBtnTools.backBtnActionEvent(event);
-    }
-
-    @FXML
-    void newPurchasingBtn(ActionEvent event) {
+    void newPurchasingOnAction(ActionEvent event) {
         SwitchSceneTools.changeSceneActionEvent(event, "../view/purchasing-new-page.fxml");
 
-        BackBtnTools.addToBackBtnStack("../view/purchasings-page.fxml");
+        BackBtn.addToBackBtnStack("../view/purchasings-page.fxml");
     }
 
     @FXML
-    void purchasingDetailBtn(ActionEvent event) {
-        Purchasing purchasing = table.getSelectionModel().getSelectedItem();
+    void purchasingDetailOnAction(ActionEvent event) {
+        PurchasingDetail purchasingDetail = table.getSelectionModel().getSelectedItem();
 
-        if (purchasing == null) {
-            AlertTools.AlertError("Error!", "Please select a purchasing!", "Error");
+        if (purchasingDetail == null) {
+            AlertTools.showAlertError("Please select a purchasing!", "Select a purchasing!");
             return;
         }
 
@@ -99,9 +127,11 @@ public class PurchasingController {
 
             Parent root = loader.load();
 
-            PurchasingDetailController controller = loader.getController();
+            PurchasingDetailController purchasingDetailDetailController = loader.getController();
 
-            controller.setPurchasing(purchasing);
+            purchasingDetailDetailController.setPurchasingDetail(purchasingDetail);
+
+            BackBtn.addToBackBtnStack("../view/purchasings-page.fxml");
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
@@ -111,136 +141,94 @@ public class PurchasingController {
 
             stage.show();
 
-            BackBtnTools.addToBackBtnStack("../view/purchasings-page.fxml");
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     @FXML
-    void searchBtn(ActionEvent event) {
-        String dateStart = null;
-        String dateEnd = null;
+    void refreshOnAction(ActionEvent event) {
+        setTable();
 
-        try {
-            dateStart = this.startDatePicker.getValue().toString();
-            dateEnd = this.endDatePicker.getValue().toString();
-        } catch (Exception e) {
+        setSearchFormEmpty();
+    }
 
-        }
+    @FXML
+    void searchOnAction(ActionEvent event) {
+        if ((startDatePicker.getValue() == null || endDatePicker.getValue() == null)
+                && ValidationTools.isTextFieldEmptyOrNull(searchTf)) {
+            AlertTools.showAlertError("Date picker and search text field is empty!", "Please fill in all fields");
 
-        if (ValidationTools.isTextFieldEmptyOrNull(searchTf) && (dateStart == null && dateEnd == null)) {
-            AlertTools.AlertError("Error!", "Search text field and date picker is empty!", "Please enter a value!");
+            setSearchFormEmpty();
 
             return;
         }
 
-        table.getItems().clear();
+        String sql = null;
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
 
-        if (ValidationTools.isTextFieldEmptyOrNull(searchTf) && (dateStart != null && dateEnd != null)) {
-
-            try {
-                Connection connection = DatabaseTools.getConnection();
-                PreparedStatement statement = connection.prepareStatement(
-                        "SELECT purchasings.id, purchasings.supplier_name, purchasings.date, purchasings.amount, COUNT(books.purchasing_id) AS totalBooksBought FROM purchasings INNER JOIN books ON purchasings.id = books.purchasing_id  GROUP BY purchasings.id HAVING purchasings.date BETWEEN ? AND ? ");
-                statement.setString(1, dateStart);
-                statement.setString(2, dateEnd);
-
-                ResultSet resultSet = statement.executeQuery();
-
-                while (resultSet.next()) {
-                    Purchasing purchasing = new Purchasing(resultSet.getInt("purchasings.id"),
-                            resultSet.getString("purchasings.date"),
-                            resultSet.getString("purchasings.supplier_name"), resultSet.getInt("totalBooksBought"),
-                            resultSet.getDouble("purchasings.amount"));
-                    table.getItems().add(purchasing);
-                }
-
-                DatabaseTools.closeQueryOperation(connection, statement, resultSet);
-            } catch (Exception e) {
-                AlertTools.AlertErrorContactSupport();
-            }
-
-        } else if (!ValidationTools.isTextFieldEmptyOrNull(searchTf) && (dateStart == null && dateEnd == null)) {
-            try {
-                Connection connection = DatabaseTools.getConnection();
-                PreparedStatement statement = connection.prepareStatement(
-                        "SELECT purchasings.id, purchasings.supplier_name, purchasings.date, purchasings.amount, COUNT(books.purchasing_id) AS totalBooksBought FROM purchasings INNER JOIN books ON purchasings.id = books.purchasing_id  GROUP BY purchasings.id HAVING purchasings.supplier_name LIKE ? ");
-                statement.setString(1, "%" + searchTf.getText() + "%");
-
-                ResultSet resultSet = statement.executeQuery();
-
-                while (resultSet.next()) {
-                    Purchasing purchasing = new Purchasing(resultSet.getInt("purchasings.id"),
-                            resultSet.getString("purchasings.date"),
-                            resultSet.getString("purchasings.supplier_name"), resultSet.getInt("totalBooksBought"),
-                            resultSet.getDouble("purchasings.amount"));
-                    table.getItems().add(purchasing);
-                }
-
-                DatabaseTools.closeQueryOperation(connection, statement, resultSet);
-            } catch (Exception e) {
-                AlertTools.AlertErrorContactSupport();
-            }
-        } else {
-            try {
-                Connection connection = DatabaseTools.getConnection();
-                PreparedStatement statement = connection.prepareStatement(
-                        "SELECT purchasings.id, purchasings.supplier_name, purchasings.date, purchasings.amount, COUNT(books.purchasing_id) AS totalBooksBought FROM purchasings INNER JOIN books ON purchasings.id = books.purchasing_id  GROUP BY purchasings.id HAVING purchasings.supplier_name LIKE ? AND purchasings.date BETWEEN ? AND ? ");
-                statement.setString(1, "%" + searchTf.getText() + "%");
-                statement.setString(2, dateStart);
-                statement.setString(3, dateEnd);
-
-                ResultSet resultSet = statement.executeQuery();
-
-                while (resultSet.next()) {
-                    Purchasing purchasing = new Purchasing(resultSet.getInt("purchasings.id"),
-                            resultSet.getString("purchasings.date"),
-                            resultSet.getString("purchasings.supplier_name"), resultSet.getInt("totalBooksBought"),
-                            resultSet.getDouble("purchasings.amount"));
-                    table.getItems().add(purchasing);
-                }
-
-                DatabaseTools.closeQueryOperation(connection, statement, resultSet);
-            } catch (Exception e) {
-                AlertTools.AlertErrorContactSupport();
-            }
+        if (ValidationTools.isTextFieldEmptyOrNull(searchTf)
+                && (startDatePicker.getValue() != null && endDatePicker.getValue() != null)) {
+            sql = "SELECT * FROM purchasings_details WHERE payment_date BETWEEN '" + startDatePicker.getValue()
+                    + "' AND '" + endDatePicker.getValue() + "'";
         }
 
-        setSearchForm();
+        if (!ValidationTools.isTextFieldEmptyOrNull(searchTf)
+                && (startDatePicker.getValue() == null && endDatePicker.getValue() == null)) {
+            sql = "SELECT * FROM purchasings_details WHERE supplier_name LIKE   '%" + searchTf.getText() + "%'";
+        }
 
-    }
+        if (!ValidationTools.isTextFieldEmptyOrNull(searchTf)
+                && (startDatePicker.getValue() != null && endDatePicker.getValue() != null)) {
+            sql = "SELECT * FROM purchasings_details WHERE payment_date  supplier_name LIKE ? AND payment_date BETWEEN '"
+                    + startDatePicker.getValue() + "' AND '" + endDatePicker.getValue() + "'";
+        }
 
-    private void refreshTable() {
-        table.getItems().clear();
-        setSearchForm();
+        if (sql == null) {
+            setTable();
+
+            setSearchFormEmpty();
+
+            return;
+        }
 
         try {
-            Connection connection = DatabaseTools.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(
-                    "SELECT purchasings.id, purchasings.supplier_name, purchasings.date, purchasings.amount, COUNT(books.purchasing_id) AS totalBooksBought FROM purchasings INNER JOIN books ON purchasings.id = books.purchasing_id  GROUP BY purchasings.id");
+            connection = DatabaseTools.getConnection();
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(sql);
+
+            table.getItems().clear();
 
             while (resultSet.next()) {
-                Purchasing purchasing = new Purchasing(resultSet.getInt("purchasings.id"),
-                        resultSet.getString("purchasings.date"),
-                        resultSet.getString("purchasings.supplier_name"), resultSet.getInt("totalBooksBought"),
-                        resultSet.getDouble("purchasings.amount"));
-                table.getItems().add(purchasing);
+                PurchasingDetail purchasingDetail = new PurchasingDetail(resultSet.getInt("id"),
+                        resultSet.getString("supplier_name"), resultSet.getInt("total_books"),
+                        resultSet.getDouble("total_amount"), resultSet.getString("payment_date"));
+                table.getItems().add(purchasingDetail);
             }
-
-            DatabaseTools.closeQueryOperation(connection, statement, resultSet);
         } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
+
+            AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (statement != null)
+                    statement.close();
+                if (resultSet != null)
+                    resultSet.close();
+            } catch (SQLException e) {
+                AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+            }
         }
+
+        setSearchFormEmpty();
     }
 
-    private void setSearchForm() {
+    private void setSearchFormEmpty() {
         UiTools.setTextFieldEmpty(searchTf);
-        this.startDatePicker.setValue(null);
-        this.endDatePicker.setValue(null);
+        UiTools.setDatePickerNull(startDatePicker, endDatePicker);
     }
 
 }
