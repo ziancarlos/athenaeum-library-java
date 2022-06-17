@@ -4,7 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import model.Book;
-import tools.BackBtnTools;
+import tools.BackBtn;
 
 public class BookDetailController {
 
@@ -13,23 +13,26 @@ public class BookDetailController {
 
     private Book book;
 
+    private void setLv() {
+        listView.getItems().clear();
+
+        listView.getItems().add("Id : " + book.getId());
+        listView.getItems().add("Title : " + book.getName());
+        listView.getItems().add("Availability : " + book.getAvailability());
+        listView.getItems().add("Category : " + book.getCategory().getName());
+        listView.getItems().add("Purchase Date : " + book.getPurchaseDate());
+
+    }
+
     @FXML
-    void backBtn(ActionEvent event) {
-        BackBtnTools.backBtnActionEvent(event);
+    void backOnAction(ActionEvent event) {
+        BackBtn.backBtnActionEvent(event);
     }
 
     public void setBook(Book book) {
         this.book = book;
 
-        setListView();
-    }
-
-    private void setListView() {
-        listView.getItems().add("Book ID: " + book.getId());
-        listView.getItems().add("Book Name: " + book.getName());
-        listView.getItems().add("Category: " + book.getCategory().getName());
-        listView.getItems().add("Purchase Date: " + book.getpurchaseDate());
-        listView.getItems().add("Availability: " + book.getAvailability());
+        setLv();
     }
 
 }
