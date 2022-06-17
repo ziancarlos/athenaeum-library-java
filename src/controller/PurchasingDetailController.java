@@ -3,6 +3,7 @@ package controller;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,9 +13,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Book;
 import model.Category;
-import model.Purchasing;
+import model.PurchasingDetail;
 import tools.AlertTools;
-import tools.BackBtnTools;
+import tools.BackBtn;
 import tools.DatabaseTools;
 
 public class PurchasingDetailController {
@@ -37,62 +38,73 @@ public class PurchasingDetailController {
     @FXML
     private TableView<Book> table;
 
-    private Purchasing purchasing;
+    private PurchasingDetail purchasingDetail;
 
     public void initialize() {
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-        categoryCol.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
-        amountCol.setCellValueFactory(new PropertyValueFactory<>("boughtPrice"));
+        categoryCol.setCellValueFactory(new PropertyValueFactory<>("category"));
     }
 
     @FXML
     void backBtn(ActionEvent event) {
-        BackBtnTools.backBtnActionEvent(event);
+        BackBtn.backBtnActionEvent(event);
     }
 
-    public void setPurchasing(Purchasing purchasing) {
-        this.purchasing = purchasing;
-
-        setListView();
+    public void setPurchasingDetail(PurchasingDetail purchasingDetail) {
+        this.purchasingDetail = purchasingDetail;
 
         setTable();
 
+        setLv();
     }
 
-    private void setListView() {
+    private void setLv() {
         lv.getItems().clear();
 
-        lv.getItems().add("ID: " + purchasing.getId());
-        lv.getItems().add("Supplier: " + purchasing.getSupplierName());
-        lv.getItems().add("Total Amount: " + purchasing.getTotalAmount());
-        lv.getItems().add("Date: " + purchasing.getPurchasingDate());
-        lv.getItems().add("Total Books: " + purchasing.getTotalBooksBought());
+        lv.getItems().add("Id : " + purchasingDetail.getId());
+        lv.getItems().add("Supplier Name : " + purchasingDetail.getSupplierName());
+        lv.getItems().add("Purchasing Date : " + purchasingDetail.getPurchasingDate());
+        lv.getItems().add("Total Amount : " + purchasingDetail.getTotalAmount());
+        lv.getItems().add("Total Books : " + purchasingDetail.getTotalBooks());
     }
 
     private void setTable() {
         table.getItems().clear();
 
-        try {
-            Connection connection = DatabaseTools.getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM books INNER JOIN categories ON books.category_id = categories.id INNER JOIN purchasings ON purchasings.id = books.purchasing_id WHERE books.purchasing_id = ?;");
-            statement.setInt(1, purchasing.getId());
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
-            ResultSet resultSet = statement.executeQuery();
+        try {
+            connection = DatabaseTools.getConnection();
+            preparedStatement = connection.prepareStatement(
+                    "SELECT books.id, books.name, books.availability, categories.id, categories.name FROM books INNER JOIN categories ON books.category_id = categories.id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id WHERE purchasings_books_details.purchasing_id = ?");
+            preparedStatement.setInt(1, purchasingDetail.getId());
+
+            resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
                 Book book = new Book(resultSet.getInt("books.id"), resultSet.getString("books.name"),
-                        new Category(resultSet.getInt("categories.id"), resultSet.getString("categories.name")),
-                        resultSet.getInt("books.availability"), resultSet.getString("purchasings.date"),
-                        resultSet.getDouble("books.bought_price"), resultSet.getInt("books.id"));
+                        resultSet.getString("books.availability"),
+                        new Category(resultSet.getInt("categories.id"), resultSet.getString("categories.name")));
                 table.getItems().add(book);
             }
-
-            DatabaseTools.closeQueryOperation(connection, statement, resultSet);
         } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
+            AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (preparedStatement != null)
+                    preparedStatement.close();
+                if (resultSet != null)
+                    resultSet.close();
+            } catch (SQLException e) {
+                AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+            }
         }
     }
-
 }
