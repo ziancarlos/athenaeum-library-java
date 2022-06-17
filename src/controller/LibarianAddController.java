@@ -1,11 +1,15 @@
 package controller;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import model.User;
 import tools.AlertTools;
-import tools.BackBtnTools;
+import tools.BackBtn;
+import tools.DatabaseTools;
+import tools.MD5;
 import tools.UiTools;
 import tools.ValidationTools;
 
@@ -15,79 +19,90 @@ public class LibarianAddController {
     private TextField passwordTf;
 
     @FXML
-    private TextField phoneNumberTf;
-
-    @FXML
     private TextField usernameTf;
 
-    public void initialize() {
-        setDefaultTf();
+    @FXML
+    void addOnAction(ActionEvent event) {
+        if (ValidationTools.isTextFieldEmptyOrNull(usernameTf, passwordTf)) {
+            tools.AlertTools.showAlertError("Username/Password text field is empty", "Please fill in all fields");
+
+            setDefaultTf();
+
+            return;
+        }
+
+        if (!ValidationTools.isTextIsValid(3, 30, usernameTf.getText())) {
+            tools.AlertTools.showAlertError("Username is invalid", "Username must be between 3 and 30 characters");
+
+            setDefaultTf();
+
+            return;
+        }
+
+        if (!ValidationTools.isTextIsValid(8, 45, passwordTf.getText())) {
+            tools.AlertTools.showAlertError("Password is invalid", "Password must be between 8 and 45 characters");
+
+            setDefaultTf();
+
+            return;
+        }
+
+        if (User.isUsernameExist(usernameTf.getText())) {
+            tools.AlertTools.showAlertError("Username already exist", "Username already exist");
+
+            setDefaultTf();
+
+            return;
+        }
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        int affectedRows;
+
+        try {
+            connection = DatabaseTools.getConnection();
+            preparedStatement = connection
+                    .prepareStatement(
+                            "INSERT INTO libarians (username, password, role, active, created_at) VALUES (?, ?, 'libarian', 'active', NOW())");
+            preparedStatement.setString(1, usernameTf.getText());
+            preparedStatement.setString(2, MD5.getMd5(passwordTf.getText()));
+
+            affectedRows = preparedStatement.executeUpdate();
+
+            if (affectedRows > 0) {
+                AlertTools.showAlertConfirmation("Success", "Libarian added successfully!");
+
+                BackBtn.backBtnActionEvent(event);
+            } else {
+                AlertTools.showAlertError("Error", "Libarian not added");
+
+                setDefaultTf();
+            }
+
+        } catch (Exception e) {
+            AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (Exception e) {
+                AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+            }
+        }
+
     }
 
     @FXML
-    void addBtn(ActionEvent event) {
-        if (ValidationTools.isTextFieldEmptyOrNull(usernameTf, passwordTf, phoneNumberTf)) {
-            AlertTools.AlertError("Error!", "Username, password or phone number field is blank!", null);
-
-            setDefaultTf();
-
-            return;
-        }
-
-        if (!ValidationTools.isPhoneNumberValid(phoneNumberTf.getText())) {
-            AlertTools.AlertError("Error!", "Phone number is not valid!", null);
-
-            setDefaultTf();
-
-            return;
-        }
-
-        if (User.isValueExist("username", usernameTf.getText())) {
-            AlertTools.AlertError("Error!", "Username is already exist!", null);
-
-            setDefaultTf();
-
-            return;
-        }
-
-        if (User.isValueExist("phone_number", phoneNumberTf.getText())) {
-            AlertTools.AlertError("Error!", "Phone number is already exist!", null);
-
-            setDefaultTf();
-
-            return;
-        }
-
-        if (passwordTf.getText().length() < 8) {
-            AlertTools.AlertError("Error!", "Password is not valid!", null);
-
-            setDefaultTf();
-
-            return;
-        }
-
-        if (User.addLibarian(usernameTf.getText(), passwordTf.getText(), phoneNumberTf.getText())) {
-            AlertTools.AlertInformation("Success!", "Libarian is added successfully!", null);
-
-            BackBtnTools.backBtnActionEvent(event);
-
-            setDefaultTf();
-        } else {
-            AlertTools.AlertError("Error!", "Libarian is not added!", null);
-
-            setDefaultTf();
-        }
-
-    }
-
-    @FXML
-    void backBtn(ActionEvent event) {
-        BackBtnTools.backBtnActionEvent(event);
+    void backOnAction(ActionEvent event) {
+        BackBtn.backBtnActionEvent(event);
     }
 
     private void setDefaultTf() {
         UiTools.setTextFieldEmpty(usernameTf, passwordTf);
-        phoneNumberTf.setText("+628");
     }
 
 }
