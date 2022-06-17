@@ -26,6 +26,6 @@
             <Font size="16.0" />
          </font>
       </Label>
-      <Button layoutX="148.0" layoutY="267.0" mnemonicParsing="false" onAction="#loginBtn" prefHeight="25.0" prefWidth="304.0" text="Login" />
+      <Button layoutX="148.0" layoutY="267.0" mnemonicParsing="false" onAction="#loginOnAction" prefHeight="25.0" prefWidth="304.0" text="Login" />
    </children>
 </AnchorPane>

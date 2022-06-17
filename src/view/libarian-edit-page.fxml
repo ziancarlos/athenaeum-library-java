@@ -21,18 +21,12 @@
          </font>
       </Label>
       <TextField fx:id="usernameTf" layoutX="21.0" layoutY="91.0" prefHeight="25.0" prefWidth="495.0" />
-      <Label layoutX="21.0" layoutY="124.0" text="Libarians Phone Number">
+      <Button layoutX="21.0" layoutY="209.0" mnemonicParsing="false" onAction="#addBtn" prefHeight="25.0" prefWidth="495.0" text="Add Libarians" />
+      <Label layoutX="21.0" layoutY="122.0" text="Libarians Password">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <TextField fx:id="phoneNumberTf" layoutX="21.0" layoutY="149.0" prefHeight="25.0" prefWidth="495.0" />
-      <Button layoutX="21.0" layoutY="269.0" mnemonicParsing="false" onAction="#addBtn" prefHeight="25.0" prefWidth="495.0" text="Add Libarians" />
-      <Label layoutX="21.0" layoutY="182.0" text="Libarians Password">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-      <TextField fx:id="passwordTf" layoutX="21.0" layoutY="207.0" prefHeight="25.0" prefWidth="495.0" />
+      <TextField fx:id="passwordTf" layoutX="21.0" layoutY="147.0" prefHeight="25.0" prefWidth="495.0" />
    </children>
 </AnchorPane>

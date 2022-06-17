@@ -14,13 +14,13 @@
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
-      <Button layoutX="517.0" layoutY="22.0" mnemonicParsing="false" onAction="#backBtn" prefHeight="32.0" prefWidth="64.0" text="Back" />
+      <Button layoutX="517.0" layoutY="22.0" mnemonicParsing="false" onAction="#backOnAction" prefHeight="32.0" prefWidth="64.0" text="Back" />
       <TextField fx:id="categoryNameTf" layoutX="22.0" layoutY="92.0" prefHeight="25.0" prefWidth="498.0" />
       <Label layoutX="22.0" layoutY="69.0" text="Category Name">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <Button layoutX="22.0" layoutY="159.0" mnemonicParsing="false" onAction="#addBtn" prefHeight="25.0" prefWidth="498.0" text="Add Category" />
+      <Button layoutX="22.0" layoutY="159.0" mnemonicParsing="false" onAction="#addOnAction" prefHeight="25.0" prefWidth="498.0" text="Add Category" />
    </children>
 </AnchorPane>

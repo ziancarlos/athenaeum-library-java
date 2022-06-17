@@ -15,20 +15,20 @@
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
-      <Button layoutX="517.0" layoutY="22.0" mnemonicParsing="false" onAction="#backBtn" prefHeight="32.0" prefWidth="64.0" text="Back" />
-      <Button layoutX="419.0" layoutY="145.0" mnemonicParsing="false" onAction="#editBtn" prefHeight="25.0" prefWidth="167.0" text="Edit" />
-      <Button layoutX="419.0" layoutY="111.0" mnemonicParsing="false" onAction="#addBtn" prefHeight="25.0" prefWidth="167.0" text="Add" />
-      <Button layoutX="177.0" layoutY="76.0" mnemonicParsing="false" onAction="#searchBtn" prefHeight="25.0" prefWidth="56.0" text="Search" />
+      <Button layoutX="517.0" layoutY="22.0" mnemonicParsing="false" onAction="#backOnAction" prefHeight="32.0" prefWidth="64.0" text="Back" />
+      <Button layoutX="419.0" layoutY="145.0" mnemonicParsing="false" onAction="#editOnAction" prefHeight="25.0" prefWidth="167.0" text="Edit" />
+      <Button layoutX="419.0" layoutY="111.0" mnemonicParsing="false" onAction="#addOnAction" prefHeight="25.0" prefWidth="167.0" text="Add" />
+      <Button layoutX="177.0" layoutY="76.0" mnemonicParsing="false" onAction="#searchOnAction" prefHeight="25.0" prefWidth="56.0" text="Search" />
       <TextField fx:id="searchTf" layoutX="22.0" layoutY="76.0" prefHeight="25.0" prefWidth="144.0" />
       <TableView fx:id="table" layoutX="22.0" layoutY="111.0" prefHeight="215.0" prefWidth="379.0">
          <columns>
             <TableColumn fx:id="idCol" prefWidth="56.0" text="ID" />
             <TableColumn fx:id="nameCol" prefWidth="198.0" text="Name" />
-            <TableColumn fx:id="connectedBooks" prefWidth="124.0" text="Connected Books" />
+            <TableColumn fx:id="connectedBooksCol" prefWidth="124.0" text="Connected Books" />
          </columns>
       </TableView>
-      <Button layoutX="419.0" layoutY="181.0" mnemonicParsing="false" onAction="#deleteBtn" prefHeight="25.0" prefWidth="167.0" text="Delete" />
-      <Button layoutX="419.0" layoutY="219.0" mnemonicParsing="false" onAction="#detailsBtn" prefHeight="25.0" prefWidth="167.0" text="Details" />
-      <Button layoutX="419.0" layoutY="258.0" mnemonicParsing="false" onAction="#refreshBtn" prefHeight="25.0" prefWidth="167.0" text="Refresh" />
+      <Button layoutX="419.0" layoutY="181.0" mnemonicParsing="false" onAction="#deleteOnAction" prefHeight="25.0" prefWidth="167.0" text="Delete" />
+      <Button layoutX="419.0" layoutY="219.0" mnemonicParsing="false" onAction="#detailsOnAction" prefHeight="25.0" prefWidth="167.0" text="Details" />
+      <Button layoutX="419.0" layoutY="258.0" mnemonicParsing="false" onAction="#refreshOnAction" prefHeight="25.0" prefWidth="167.0" text="Refresh" />
    </children>
 </AnchorPane>
