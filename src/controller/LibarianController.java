@@ -4,184 +4,272 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import model.User;
+import model.Libarian;
 import tools.AlertTools;
-import tools.BackBtnTools;
+import tools.BackBtn;
 import tools.DatabaseTools;
 import tools.SwitchSceneTools;
 import tools.UiTools;
 import tools.ValidationTools;
 
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.Node;
+import javafx.fxml.FXMLLoader;
+
 public class LibarianController {
 
     @FXML
-    private TableColumn<User, String> activeCol;
+    private TableColumn<?, ?> activeCol;
 
     @FXML
-    private TableColumn<User, Integer> idCol;
-
-    @FXML
-    private TableColumn<User, String> passwordCol;
+    private TableColumn<?, ?> idCol;
 
     @FXML
     private TextField searchTf;
 
     @FXML
-    private TableView<User> table;
+    private TableView<Libarian> table;
 
     @FXML
-    private TableColumn<?, String> usernameCol;
+    private TableColumn<?, ?> usernameCol;
+
+    @FXML
+    private TableColumn<?, ?> createdAtCol;
 
     public void initialize() {
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         usernameCol.setCellValueFactory(new PropertyValueFactory<>("username"));
-        passwordCol.setCellValueFactory(new PropertyValueFactory<>("password"));
+        createdAtCol.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
         activeCol.setCellValueFactory(new PropertyValueFactory<>("active"));
 
-        refreshTable();
+        setTable();
     }
 
     @FXML
-    void addBtn(ActionEvent event) {
+    void addOnAction(ActionEvent event) {
         SwitchSceneTools.changeSceneActionEvent(event, "../view/libarian-add-page.fxml");
 
-        BackBtnTools.addToBackBtnStack("../view/libarians-page.fxml");
+        BackBtn.addToBackBtnStack("../view/libarians-page.fxml");
     }
 
     @FXML
-    void backBtn(ActionEvent event) {
-        BackBtnTools.backBtnActionEvent(event);
+    void backOnAction(ActionEvent event) {
+        BackBtn.backBtnActionEvent(event);
     }
 
     @FXML
-    void deactivateBtn(ActionEvent event) {
-        User user = table.getSelectionModel().getSelectedItem();
+    void deactivateOnAction(ActionEvent event) {
+        Libarian libarian = table.getSelectionModel().getSelectedItem();
 
-        if (user == null) {
-            AlertTools.AlertError("Error!", "No user is selected!", null);
+        if (libarian == null) {
+            AlertTools.showAlertError("Please select a libarian to deactivate", "Error");
+
+            setTable();
+
             return;
         }
 
-        if (user.getActive() == 0) {
-            AlertTools.AlertError("Error!", "This user is already deactivate!", null);
-            return;
-        }
+        Connection connection = null;
+        PreparedStatement statementSelect = null;
+        PreparedStatement statementUpdate = null;
+        ResultSet resultSet = null;
+        int affectedRows;
 
         try {
-            Connection connection = DatabaseTools.getConnection();
-            PreparedStatement preparedStatement = connection
-                    .prepareStatement("UPDATE users SET active = 0 WHERE id = ?");
-            preparedStatement.setInt(1, user.getId());
-            int affecedRows = preparedStatement.executeUpdate();
+            connection = DatabaseTools.getConnection();
+            connection.setAutoCommit(false);
+            statementSelect = connection.prepareStatement("SELECT * FROM libarians WHERE id = ? FOR UPDATE");
+            statementSelect.setInt(1, libarian.getId());
 
-            if (affecedRows > 0) {
-                user.setActive(0);
+            resultSet = statementSelect.executeQuery();
+            if (resultSet.next()) {
+                if (resultSet.getString("active").equals("active")) {
+                    statementUpdate = connection
+                            .prepareStatement("UPDATE libarians SET active = 'unactive' WHERE id = ?");
+                    statementUpdate.setInt(1, libarian.getId());
 
-                refreshTable();
+                    affectedRows = statementUpdate.executeUpdate();
 
-                AlertTools.AlertInformation("Success!", "This user is deactivate already!", null);
+                    if (affectedRows > 0) {
+                        connection.commit();
+
+                        AlertTools.showAlertConfirmationWithOptional("Libarian deactivated successfully",
+                                "Libarian deactivated successfully");
+
+                        setTable();
+                    } else {
+                        connection.rollback();
+                        AlertTools.showAlertError("Error deactivating libarian", "Error deactivating libarian");
+                    }
+
+                } else {
+                    connection.rollback();
+
+                    AlertTools.showAlertError("Libarian is already deactivated", "Libarian is already deactivated");
+                }
+
             } else {
-                AlertTools.AlertError("Error!", "This user is not active!", null);
+                connection.rollback();
+
+                AlertTools.showAlertError("Error deactivating libarian", "Error deactivating libarian");
             }
 
-            DatabaseTools.closeQueryOperation(connection, preparedStatement);
-
         } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
+            AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+
+            try {
+                connection.rollback();
+            } catch (Exception e1) {
+                AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+            }
+
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (statementSelect != null) {
+                    statementSelect.close();
+                }
+                if (statementUpdate != null) {
+                    statementUpdate.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+            }
         }
+
     }
 
     @FXML
-    void activateBtn(ActionEvent event) {
-        User user = table.getSelectionModel().getSelectedItem();
+    void activateOnAction(ActionEvent event) {
+        Libarian libarian = table.getSelectionModel().getSelectedItem();
 
-        if (user == null) {
-            AlertTools.AlertError("Error!", "No user is selected!", null);
+        if (libarian == null) {
+            AlertTools.showAlertError("Please select a libarian to deactivate", "Error");
+
+            setTable();
+
             return;
         }
 
-        if (user.getActive() == 1) {
-            AlertTools.AlertError("Error!", "This user is already active!", null);
-            return;
-        }
+        Connection connection = null;
+        PreparedStatement statementSelect = null;
+        PreparedStatement statementUpdate = null;
+        ResultSet resultSet = null;
+        int affectedRows;
 
         try {
-            Connection connection = DatabaseTools.getConnection();
-            PreparedStatement preparedStatement = connection
-                    .prepareStatement("UPDATE users SET active = 1 WHERE id = ?");
-            preparedStatement.setInt(1, user.getId());
-            int affecedRows = preparedStatement.executeUpdate();
+            connection = DatabaseTools.getConnection();
+            connection.setAutoCommit(false);
+            statementSelect = connection.prepareStatement("SELECT * FROM libarians WHERE id = ? FOR UPDATE");
+            statementSelect.setInt(1, libarian.getId());
 
-            if (affecedRows > 0) {
-                user.setActive(1);
+            resultSet = statementSelect.executeQuery();
+            if (resultSet.next()) {
+                if (resultSet.getString("active").equals("unactive")) {
+                    statementUpdate = connection
+                            .prepareStatement("UPDATE libarians SET active = 'active' WHERE id = ?");
+                    statementUpdate.setInt(1, libarian.getId());
 
-                refreshTable();
+                    affectedRows = statementUpdate.executeUpdate();
 
-                AlertTools.AlertInformation("Success!", "This user is activated already!", null);
+                    if (affectedRows > 0) {
+                        connection.commit();
+
+                        AlertTools.showAlertConfirmationWithOptional("Libarian activated successfully",
+                                "Libarian activated successfully");
+
+                        setTable();
+                    } else {
+                        connection.rollback();
+
+                        AlertTools.showAlertError("Error activating libarian", "Error activating libarian");
+                    }
+
+                } else {
+                    connection.rollback();
+
+                    AlertTools.showAlertError("Libarian is already activated", "Libarian is already activated");
+                }
+
             } else {
-                AlertTools.AlertError("Error!", "This user is not deactive!", null);
+                connection.rollback();
+
+                AlertTools.showAlertError("Error activating libarian", "Error activating libarian");
             }
 
-            DatabaseTools.closeQueryOperation(connection, preparedStatement);
-
         } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
+            AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+
+            try {
+                connection.rollback();
+            } catch (Exception e1) {
+                AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+            }
+
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (statementSelect != null) {
+                    statementSelect.close();
+                }
+                if (statementUpdate != null) {
+                    statementUpdate.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+            }
         }
     }
 
     @FXML
-    void searchBtn(ActionEvent event) {
-        if (ValidationTools.isTextFieldEmptyOrNull(searchTf)) {
-            AlertTools.AlertError("Error", "Search field is empty", "Error!");
+    void deleteOnAction(ActionEvent event) {
+        Libarian libarian = table.getSelectionModel().getSelectedItem();
 
+        if (libarian == null) {
+            AlertTools.showAlertError("Please select a libarian to delete", "Error");
             return;
         }
 
-        table.getItems().clear();
+        if (AlertTools.showAlertConfirmationWithOptional("Are you sure you want to delete this libarian ? ", null)
+                .get() == ButtonType.OK) {
 
-        try {
-            Connection connection = DatabaseTools.getConnection();
-            PreparedStatement statement = connection
-                    .prepareStatement("SELECT * FROM users WHERE role = 'libarian' AND username LIKE ?");
-            statement.setString(1, "%" + searchTf.getText() + "%");
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                User user = new User(resultSet.getInt("id"), resultSet.getString("username"),
-                        resultSet.getString("password"), resultSet.getString("role"),
-                        resultSet.getString("phone_number"), resultSet.getString("created_at"));
-                user.setActive(resultSet.getInt("active"));
-
-                table.getItems().add(user);
+            if (Libarian.deleteLibarian(libarian)) {
+                AlertTools.showAlertInformation("Libarian deleted successfully", "Success");
+            } else {
+                AlertTools.showAlertError("Error deleting libarian", "Error");
             }
 
-            DatabaseTools.closeQueryOperation(connection, statement, resultSet);
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
-        UiTools.setTextFieldEmpty(searchTf);
+        setTable();
     }
 
     @FXML
-    void editBtn(ActionEvent event) {
-        User user = table.getSelectionModel().getSelectedItem();
+    void editOnAction(ActionEvent event) {
+        Libarian libarian = table.getSelectionModel().getSelectedItem();
 
-        if (user == null) {
-            AlertTools.AlertError("Error!", "No user is selected!", null);
+        if (libarian == null) {
+            AlertTools.showAlertError("Please select a libarian to edit", "Error");
             return;
         }
 
@@ -191,9 +279,11 @@ public class LibarianController {
 
             Parent root = loader.load();
 
-            LibarianEditController libarianEditController = loader.getController();
+            LibarianEditController controller = loader.getController();
 
-            libarianEditController.setUser(user);
+            controller.setLibarian(libarian);
+
+            BackBtn.addToBackBtnStack("../view/libarians-page.fxml");
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
@@ -203,42 +293,104 @@ public class LibarianController {
 
             stage.show();
 
-            BackBtnTools.addToBackBtnStack("../view/libarians-page.fxml");
-
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    private void refreshTable() {
+    @FXML
+    void refreshOnAction(ActionEvent event) {
+        UiTools.setTextFieldEmpty(searchTf);
+
+        setTable();
+    }
+
+    private void setTable() {
         table.getItems().clear();
 
-        UiTools.setTextFieldEmpty(searchTf);
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
         try {
-            Connection connection = DatabaseTools.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(
-                    "SELECT * FROM users WHERE role = 'libarian'");
+            connection = DatabaseTools.getConnection();
+            preparedStatement = connection.prepareStatement("SELECT * FROM libarians");
+            resultSet = preparedStatement.executeQuery();
+
             while (resultSet.next()) {
-                User user = new User(resultSet.getInt("id"), resultSet.getString("username"),
-                        resultSet.getString("password"), resultSet.getString("role"),
-                        resultSet.getString("phone_number"), resultSet.getString("created_at"));
-                user.setActive(resultSet.getInt("active"));
-
-                table.getItems().add(user);
+                table.getItems().add(new Libarian(
+                        resultSet.getInt("id"),
+                        resultSet.getString("username"),
+                        resultSet.getString("password"),
+                        resultSet.getString("role"),
+                        resultSet.getString("created_at"),
+                        resultSet.getString("active")));
             }
-
-            DatabaseTools.closeQueryOperation(connection, statement, resultSet);
-
         } catch (Exception e) {
-            e.printStackTrace();
+            AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e) {
+                AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+            }
         }
     }
 
     @FXML
-    void refreshBtn(ActionEvent event) {
-        refreshTable();
+    void searchOnAction(ActionEvent event) {
+        if (ValidationTools.isTextFieldEmptyOrNull(searchTf)) {
+            AlertTools.showAlertError("Search field is empty!", "Please enter a search term!");
+            return;
+        }
+
+        table.getItems().clear();
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseTools.getConnection();
+            preparedStatement = connection.prepareStatement("SELECT * FROM libarians WHERE username LIKE ?");
+            preparedStatement.setString(1, "%" + searchTf.getText() + "%");
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                table.getItems().add(new Libarian(
+                        resultSet.getInt("id"),
+                        resultSet.getString("username"),
+                        resultSet.getString("password"),
+                        resultSet.getString("role"),
+                        resultSet.getString("created_at"),
+                        resultSet.getString("active")));
+            }
+        } catch (Exception e) {
+            AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e) {
+                AlertTools.showAlertError("Database connectivity problem!", "Contact support!");
+            }
+        }
     }
 
 }
