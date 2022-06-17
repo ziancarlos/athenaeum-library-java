@@ -3,16 +3,20 @@ package model;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import tools.AlertTools;
 import tools.DatabaseTools;
+import tools.UiTools;
 
 public class Category {
     private SimpleIntegerProperty id;
     private SimpleStringProperty name;
     private SimpleIntegerProperty connectedBooks;
+    private ArrayList<Book> books = null;
 
     public Category(int id, String name, int connectedBooks) {
         this.id = new SimpleIntegerProperty(id);
@@ -27,10 +31,6 @@ public class Category {
 
     public int getId() {
         return id.get();
-    }
-
-    public void setId(int id) {
-        this.id.set(id);
     }
 
     public String getName() {
@@ -50,163 +50,221 @@ public class Category {
     }
 
     /**
-     * Check if category name exist in the database
+     * all books in the database related to the category
      * 
-     * @param name name to be checked
-     * @return return true if exist
+     * @return all books in the database related to the category
+     * 
      */
-    public static boolean isCategoryNameExist(String name) {
+    public ArrayList<Book> getAllBooks() {
+        books = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
         try {
-            Connection connection = DatabaseTools.getConnection();
+            connection = DatabaseTools.getConnection();
+            statement = connection.prepareStatement(
+                    "SELECT * FROM books WHERE category_id = ?");
+            statement.setInt(1, id.get());
 
-            String sql = "SELECT * FROM categories WHERE name = ?";
+            resultSet = statement.executeQuery();
 
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, name);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                return true;
+            while (resultSet.next()) {
+                books.add(new Book(resultSet.getInt("id"), resultSet.getString("name")));
             }
 
-            DatabaseTools.closeQueryOperation(connection, preparedStatement, resultSet);
+            return books;
         } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
+            return null;
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (statement != null)
+                    statement.close();
+                if (resultSet != null)
+                    resultSet.close();
+            } catch (SQLException e) {
+                return null;
+            }
         }
 
-        return false;
     }
 
     /**
-     * check name if category exist, exclude the given id
+     * delete category with the given object
      * 
-     * @param name name to be checked
-     * @return return true if exist
+     * @return true if the transaction success, false otherwise
+     * 
      */
-    public static boolean isCategoryNameExist(String name, int id) {
+    public static boolean deleteCategory(Category category) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
         try {
-            Connection connection = DatabaseTools.getConnection();
+            connection = DatabaseTools.getConnection();
+            statement = connection.prepareStatement(
+                    "DELETE FROM categories WHERE id = ?");
+            statement.setInt(1, category.getId());
 
-            String sql = "SELECT * FROM categories WHERE name = ? AND id != ?";
+            int affectedRows = statement.executeUpdate();
 
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, name);
-            preparedStatement.setInt(2, id);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
+            if (affectedRows == 0) {
+                return false;
+            } else {
                 return true;
             }
 
-            DatabaseTools.closeQueryOperation(connection, preparedStatement, resultSet);
         } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
-        }
-
-        return false;
-    }
-
-    /**
-     * edit the given category with the new name
-     * 
-     * @param category the row of category to be edited
-     * @param newName  the given new name
-     * @return return true if success
-     */
-    public static boolean editCategory(Category category, String newName) {
-        try {
-            Connection connection = DatabaseTools.getConnection();
-
-            String sql = "UPDATE categories SET name = ? WHERE id = ?";
-
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-            preparedStatement.setString(1, newName);
-            preparedStatement.setInt(2, category.getId());
-
-            int affectedRows = preparedStatement.executeUpdate();
-
-            if (affectedRows > 0) {
-                category.setName(newName);
-
-                return true;
+            return false;
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (statement != null)
+                    statement.close();
+                if (resultSet != null)
+                    resultSet.close();
+            } catch (SQLException e) {
+                return false;
             }
 
-            DatabaseTools.closeQueryOperation(connection, preparedStatement);
-
-        } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
         }
-
-        return false;
     }
 
     /**
      * add new category
      * 
-     * @param name the given name
-     * @return return true if success
+     * @param name new category name
+     * 
+     * @return all books in the database related to the category
+     * 
      */
-    public static boolean addCategory(String name) {
+    public static boolean addNewCategory(String name) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
         try {
-            Connection connection = DatabaseTools.getConnection();
+            connection = DatabaseTools.getConnection();
+            statement = connection.prepareStatement(
+                    "INSERT INTO categories (name) VALUES (?)");
+            statement.setString(1, UiTools.capitalizeWord(name));
 
-            String sql = "INSERT INTO categories (name) VALUES (?)";
+            int affectedRows = statement.executeUpdate();
 
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-            preparedStatement.setString(1, name);
-
-            int affectedRows = preparedStatement.executeUpdate();
-
-            if (affectedRows > 0) {
+            if (affectedRows == 0) {
+                return false;
+            } else {
                 return true;
             }
 
-            DatabaseTools.closeQueryOperation(connection, preparedStatement);
-
         } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
-        }
+            return false;
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (statement != null)
+                    statement.close();
+                if (resultSet != null)
+                    resultSet.close();
+            } catch (SQLException e) {
+                return false;
+            }
 
-        return false;
+        }
     }
 
     /**
-     * delete the given category
+     * check if the category name is already in the database but not the same
      * 
-     * @param category the row of category to be deleted
-     * @return return true if success
+     * @param category row to not check
+     * @param name     name to check
+     * 
+     * @return true if the category name is already in the database.
+     * 
      */
-    public static boolean deleteCategory(Category category) {
+    public static boolean isExistWithout(Category category, String name) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
         try {
-            Connection connection = DatabaseTools.getConnection();
+            connection = DatabaseTools.getConnection();
+            statement = connection.prepareStatement(
+                    "SELECT * FROM categories WHERE name = ? AND id != ?");
+            statement.setString(1, name);
+            statement.setInt(2, category.getId());
 
-            String sql = "DELETE FROM categories WHERE id = ?";
+            resultSet = statement.executeQuery();
 
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-            preparedStatement.setInt(1, category.getId());
-
-            int affectedRows = preparedStatement.executeUpdate();
-
-            if (affectedRows > 0) {
+            if (resultSet.next()) {
                 return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (statement != null)
+                    statement.close();
+                if (resultSet != null)
+                    resultSet.close();
+            } catch (SQLException e) {
+                return false;
             }
 
-            DatabaseTools.closeQueryOperation(connection, preparedStatement);
-
-        } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
         }
+    }
 
-        return false;
+    /**
+     * get all categories id and name
+     * 
+     * @return as arraylist of categoriess id and name
+     * 
+     */
+    public static ArrayList<Category> getAllCategories() {
+        ArrayList<Category> categories = new ArrayList<>();
+
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseTools.getConnection();
+            statement = connection.createStatement();
+
+            resultSet = statement.executeQuery("SELECT * FROM categories");
+
+            while (resultSet.next()) {
+                categories.add(new Category(resultSet.getInt("id"), resultSet.getString("name")));
+            }
+
+            return categories;
+        } catch (Exception e) {
+            return null;
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (statement != null)
+                    statement.close();
+                if (resultSet != null)
+                    resultSet.close();
+            } catch (SQLException e) {
+                return null;
+            }
+        }
     }
 
     @Override
     public String toString() {
-        return getName();
+        return name.get();
     }
+
 }
