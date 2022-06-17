@@ -29,7 +29,7 @@ public class SwitchSceneTools {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            AlertTools.AlertErrorContactSupport();
+            e.printStackTrace();
         }
     }
 
@@ -47,7 +47,7 @@ public class SwitchSceneTools {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            AlertTools.AlertErrorContactSupport();
+            e.printStackTrace();
         }
     }
 
@@ -66,7 +66,7 @@ public class SwitchSceneTools {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            AlertTools.AlertErrorContactSupport();
+            e.printStackTrace();
         }
     }
 

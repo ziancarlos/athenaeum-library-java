@@ -33,9 +33,9 @@ public class DatabaseTools {
             databasePassword = properties.getProperty("database.password");
 
         } catch (FileNotFoundException exception) {
-            AlertTools.AlertErrorContactSupport();
+            AlertTools.showAlertError("File not found", "Config file not found");
         } catch (IOException exception) {
-            AlertTools.AlertErrorContactSupport();
+            AlertTools.showAlertError("Config file error", "Config file error");
         }
 
         try {
@@ -43,7 +43,7 @@ public class DatabaseTools {
             DriverManager.registerDriver(mysqlDriver);
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
+            AlertTools.showAlertError("Driver error", "Please check driver file!");
         }
 
         java.sql.Connection conn = null;
@@ -51,7 +51,7 @@ public class DatabaseTools {
             conn = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/" + databaseName, databaseUsername,
                     databasePassword);
         } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
+            AlertTools.showAlertError("Connection error", "Please check your connection!");
         }
         return conn;
     }
@@ -66,11 +66,14 @@ public class DatabaseTools {
      */
     public static void closeQueryOperation(java.sql.Connection conn, Statement statement, ResultSet resultSet) {
         try {
-            conn.close();
-            statement.close();
-            resultSet.close();
+            if (conn != null)
+                conn.close();
+            if (statement != null)
+                statement.close();
+            if (resultSet != null)
+                resultSet.close();
         } catch (SQLException e) {
-            AlertTools.AlertErrorContactSupport();
+            AlertTools.showAlertError("Connection error", "Please check your connection!");
         }
     }
 
@@ -83,10 +86,12 @@ public class DatabaseTools {
      */
     public static void closeQueryOperation(java.sql.Connection conn, Statement statement) {
         try {
-            conn.close();
-            statement.close();
+            if (conn != null)
+                conn.close();
+            if (statement != null)
+                statement.close();
         } catch (SQLException e) {
-            AlertTools.AlertErrorContactSupport();
+            AlertTools.showAlertError("Connection error", "Please check your connection!");
         }
     }
 
@@ -101,11 +106,14 @@ public class DatabaseTools {
     public static void closeQueryOperationWithPreparedStatement(java.sql.Connection conn, PreparedStatement statement,
             ResultSet resultSet) {
         try {
-            conn.close();
-            statement.close();
-            resultSet.close();
+            if (conn != null)
+                conn.close();
+            if (statement != null)
+                statement.close();
+            if (resultSet != null)
+                resultSet.close();
         } catch (SQLException e) {
-            AlertTools.AlertErrorContactSupport();
+            AlertTools.showAlertError("Connection error", "Please check your connection!");
         }
     }
 
@@ -118,10 +126,12 @@ public class DatabaseTools {
      */
     public static void closeQueryOperationWithPreparedStatement(java.sql.Connection conn, PreparedStatement statement) {
         try {
-            conn.close();
-            statement.close();
+            if (conn != null)
+                conn.close();
+            if (statement != null)
+                statement.close();
         } catch (SQLException e) {
-            AlertTools.AlertErrorContactSupport();
+            AlertTools.showAlertError("Connection error", "Please check your connection!");
         }
     }
 

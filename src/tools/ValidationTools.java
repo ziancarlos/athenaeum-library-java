@@ -2,9 +2,6 @@ package tools;
 
 import javafx.scene.control.TextField;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class ValidationTools {
     /**
      * check text field is empty or null
@@ -48,44 +45,50 @@ public class ValidationTools {
         }
     }
 
-    public static boolean isDouble(String str) {
-        try {
-            Double.parseDouble(str);
-            return true;
-        } catch (NumberFormatException e) {
+    /**
+     * check if the given text is valid with the given minimum and maximum length
+     * 
+     * @param min minimum length of the text
+     * @param max maximum length of the text
+     * @return true if the text is valid
+     * 
+     */
+    public static boolean isTextIsValid(int min, int max, String text) {
+        if (text.length() < min || text.length() > max) {
             return false;
+        } else {
+            return true;
         }
     }
 
-    public static boolean isDateOlderThanOneDay(String purchasingDate) {
-        String[] splittedPurchasingDate = purchasingDate.split("-");
-        String year = splittedPurchasingDate[0];
-        String month = splittedPurchasingDate[1];
-        String day = splittedPurchasingDate[2];
+    /**
+     * check if the given string is double
+     * 
+     * @return true if the given string is double
+     * 
+     */
+    public static boolean isDouble(String value) {
+        try {
+            Double.parseDouble(value);
+        } catch (Exception e) {
+            return false;
+        }
 
-        String[] splittedToday = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString().split("-");
+        return true;
+    }
 
-        String todayYear = splittedToday[0];
-        String todayMonth = splittedToday[1];
-        String todayDay = splittedToday[2];
-
-        if (Integer.parseInt(year) < Integer.parseInt(todayYear)) {
+    /**
+     * check if the double is negative or below 0
+     * 
+     * @return true if the double is negative or below 0
+     * 
+     */
+    public static boolean isDoubleIsNegative(double value) {
+        if (value < 0) {
             return true;
-        } else if (Integer.parseInt(year) == Integer.parseInt(todayYear)) {
-            if (Integer.parseInt(month) < Integer.parseInt(todayMonth)) {
-                return true;
-            } else if (Integer.parseInt(month) == Integer.parseInt(todayMonth)) {
-                if (Integer.parseInt(day) < Integer.parseInt(todayDay)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
         } else {
             return false;
         }
-
     }
+
 }

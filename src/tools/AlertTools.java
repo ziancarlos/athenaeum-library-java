@@ -4,63 +4,82 @@ import java.util.Optional;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Alert.AlertType;
 
 public class AlertTools {
+
     /**
-     * AlertError
+     * Show Information Alert
      * 
-     * @param title   the title of the alert
      * @param header  the header of the alert
      * @param content the content of the alert
+     * 
      */
-    public static void AlertError(String title, String header, String content) {
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle(title);
+    public static void showAlertInformation(String header, String content) {
+
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
     }
 
     /**
-     * Alert Information
+     * Show Warning Alert
      * 
-     * @param title   the title of the alert
      * @param header  the header of the alert
      * @param content the content of the alert
+     * 
      */
-    public static void AlertInformation(String title, String header, String content) {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle(title);
+    public static void showAlertError(String header, String content) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.ERROR);
+        alert.setTitle("Error");
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
     }
 
     /**
-     * Alert Confirmation
+     * Show Warning Alert
      * 
-     * @param title   the title of the alert
      * @param header  the header of the alert
      * @param content the content of the alert
-     * @return the result of the alert
+     * 
      */
-    public static Optional<ButtonType> AlertConfirmation(String title, String header, String content) {
-        Alert alert = new Alert(AlertType.CONFIRMATION);
-        alert.setTitle(title);
+    public static void showAlertWarning(String header, String content) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.WARNING);
+        alert.setTitle("Warning");
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    /**
+     * Show Confirmation Alert
+     * 
+     * @param header  the header of the alert
+     * @param content the content of the alert
+     * 
+     */
+    public static void showAlertConfirmation(String header, String content) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    public static Optional<ButtonType> showAlertConfirmationWithOptional(String header, String content) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
         alert.setHeaderText(header);
         alert.setContentText(content);
 
         return alert.showAndWait();
-    }
-
-    public static void AlertErrorContactSupport() {
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("Error!");
-        alert.setHeaderText("Contact Support!");
-        alert.setContentText("Please contact support!");
-
-        alert.showAndWait();
     }
 
 }
