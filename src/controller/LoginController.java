@@ -1,15 +1,13 @@
 package controller;
 
 import java.sql.SQLException;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import model.User;
-import tools.AlertTools;
+import tools.BackBtn;
 import tools.CurrentUser;
 import tools.SwitchSceneTools;
-import tools.UiTools;
 import tools.ValidationTools;
 
 public class LoginController {
@@ -21,11 +19,11 @@ public class LoginController {
     private TextField usernameTf;
 
     @FXML
-    void loginBtn(ActionEvent event) {
+    void loginOnAction(ActionEvent event) {
         if (ValidationTools.isTextFieldEmptyOrNull(usernameTf, passwordTf)) {
-            AlertTools.AlertError("Error!", "Username or password field is blank!", null);
+            tools.AlertTools.showAlertError("Username/Password text field is empty", "Please fill in all fields");
 
-            UiTools.setTextFieldEmpty(usernameTf, passwordTf);
+            settAllTfDefault();
 
             return;
         }
@@ -33,22 +31,32 @@ public class LoginController {
         User user = null;
 
         try {
-            user = User.validateUser(usernameTf.getText(), passwordTf.getText());
+            user = User.getUsernameAndPasswordValid(usernameTf.getText(), passwordTf.getText());
         } catch (SQLException e) {
-            AlertTools.AlertError("Error!", "Contact Support!", null);
-            e.printStackTrace();
-            return;
-        }
+            tools.AlertTools.showAlertError("Error", "Error while connecting to database");
 
-        if (user != null) {
-            CurrentUser.currentUser = user;
-
-            SwitchSceneTools.changeSceneActionEvent(event, "../view/menu-page.fxml");
+            settAllTfDefault();
 
             return;
         }
 
-        AlertTools.AlertError("Error!", "Username and password dont match!", null);
+        if (user == null) {
+            tools.AlertTools.showAlertError("Username/Password is invalid", "Please check your username/password");
+
+            settAllTfDefault();
+
+            return;
+        }
+
+        CurrentUser.currentUser = user;
+
+        SwitchSceneTools.changeSceneActionEvent(event, "../view/menu-page.fxml");
+
+        BackBtn.addToBackBtnStack("../view/menu-page.fxml");
+    }
+
+    private void settAllTfDefault() {
+        tools.UiTools.setTextFieldEmpty(usernameTf, passwordTf);
     }
 
 }
