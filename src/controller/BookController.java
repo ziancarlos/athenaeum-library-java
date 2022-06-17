@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -17,36 +17,45 @@ import javafx.stage.Stage;
 import model.Book;
 import model.Category;
 import tools.AlertTools;
-import tools.BackBtnTools;
+import tools.BackBtn;
+import tools.CurrentUser;
 import tools.DatabaseTools;
+import tools.UiTools;
 import tools.ValidationTools;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.Node;
 
 public class BookController {
 
     @FXML
-    private TableColumn<Book, String> availCol;
+    private TableColumn<?, ?> availCol;
 
     @FXML
     private ComboBox<Category> categoryCb;
 
     @FXML
-    private TableColumn<Book, String> categoryCol;
+    private TableColumn<?, ?> categoryCol;
 
     @FXML
-    private TableColumn<Book, Integer> idCol;
+    private TableColumn<?, ?> idCol;
 
     @FXML
-    private TableColumn<Book, String> nameCol;
+    private TableColumn<?, ?> nameCol;
 
     @FXML
-    private TableColumn<Book, String> purchaseDateCol;
+    private TableColumn<?, ?> purchaseDateCol;
 
     @FXML
     private TextField searchTf;
+
+    @FXML
+    private Button editBtn;
+
+    @FXML
+    private Button detailsBtn;
 
     @FXML
     private TableView<Book> table;
@@ -54,58 +63,116 @@ public class BookController {
     public void initialize() {
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-        categoryCol.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
+        categoryCol.setCellValueFactory(new PropertyValueFactory<>("category"));
         purchaseDateCol.setCellValueFactory(new PropertyValueFactory<>("purchaseDate"));
         availCol.setCellValueFactory(new PropertyValueFactory<>("availability"));
 
         setTable();
 
         setCategoryCb();
+
+        setPermission();
     }
 
-    @FXML
-    void searchBtn(ActionEvent event) {
+    private void setPermission() {
+        if (CurrentUser.currentUser.getRole().equals("customer")) {
+            editBtn.setVisible(false);
 
-        if (ValidationTools.isTextFieldEmptyOrNull(searchTf)
-                && categoryCb.getSelectionModel().getSelectedItem() == null) {
+            detailsBtn.setLayoutX(22);
+            detailsBtn.setLayoutY(336);
+        }
+    }
 
-            setTable();
+    private void setCategoryCb() {
+        categoryCb.getItems().clear();
 
-        } else if (ValidationTools.isTextFieldEmptyOrNull(searchTf)
-                && categoryCb.getSelectionModel().getSelectedItem() != null) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
-            queryAllWithCategory();
+        try {
+            connection = DatabaseTools.getConnection();
+            preparedStatement = connection.prepareStatement(
+                    "SELECT * FROM categories");
+            resultSet = preparedStatement.executeQuery();
 
-        } else if (!ValidationTools.isTextFieldEmptyOrNull(searchTf)
-                && categoryCb.getSelectionModel().getSelectedItem() == null) {
-
-            queryAllWithBookName();
-
-        } else {
-
-            queryAllWithBookNameAndCategory();
-
+            while (resultSet.next()) {
+                this.categoryCb.getItems().add(
+                        new Category(
+                                resultSet.getInt("id"),
+                                resultSet.getString("name")));
+            }
+        } catch (Exception e) {
+            AlertTools.showAlertError("Error", e.getMessage());
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                AlertTools.showAlertError("Error", e.getMessage());
+            }
         }
 
-        setDefaultSearchForm();
+    }
+
+    private void setTable() {
+        table.getItems().clear();
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseTools.getConnection();
+            preparedStatement = connection.prepareStatement(
+                    "SELECT books.id, books.name, books.availability, categories.id, categories.name, bookkeepings.payment_date AS purchase_date FROM books INNER JOIN  categories ON books.category_id = categories.id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id INNER JOIN bookkeepings ON purchasings_books_details.purchasing_id = bookkeepings.id");
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                table.getItems().add(new Book(
+                        resultSet.getInt("books.id"),
+                        resultSet.getString("books.name"),
+                        resultSet.getString("books.availability"),
+                        new Category(resultSet.getInt("categories.id"), resultSet.getString("categories.name")),
+                        resultSet.getString("purchase_date")));
+            }
+        } catch (Exception e) {
+            AlertTools.showAlertError("Error", e.getMessage());
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                AlertTools.showAlertError("Error", e.getMessage());
+            }
+        }
     }
 
     @FXML
-    void backBtn(ActionEvent event) {
-        BackBtnTools.backBtnActionEvent(event);
+    void backOnAction(ActionEvent event) {
+        BackBtn.backBtnActionEvent(event);
     }
 
     @FXML
-    void deactivateBtn(ActionEvent event) {
-
-    }
-
-    @FXML
-    void detailsBtn(ActionEvent event) {
+    void detailsOnAction(ActionEvent event) {
         Book book = table.getSelectionModel().getSelectedItem();
 
         if (book == null) {
-            AlertTools.AlertError("Error!", "No Book Selected!", "Please select a book to view details.");
+            AlertTools.showAlertError("Error", "Please select a book");
 
             return;
         }
@@ -127,173 +194,211 @@ public class BookController {
 
             stage.show();
 
-            BackBtnTools.addToBackBtnStack("../view/books-page.fxml");
+            BackBtn.addToBackBtnStack("../view/books-page.fxml");
 
         } catch (IOException e) {
-            AlertTools.AlertErrorContactSupport();
+            AlertTools.showAlertError("Switch scene problem!", "Contact support!");
         }
     }
 
     @FXML
-    void editBtn(ActionEvent event) {
+    void editOnAction(ActionEvent event) {
         Book book = table.getSelectionModel().getSelectedItem();
 
-        if (book != null) {
-            try {
+        if (book == null) {
+            AlertTools.showAlertError("Error", "Please select a book");
 
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/book-edit-page.fxml"));
+            return;
+        }
 
-                Parent root = loader.load();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/book-edit-page.fxml"));
 
-                BookEditController bookEditController = loader.getController();
+            Parent root = loader.load();
 
-                bookEditController.setBook(book);
+            BookEditController controller = loader.getController();
 
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            controller.setBook(book);
 
-                Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-                stage.setScene(scene);
+            Scene scene = new Scene(root);
 
-                stage.show();
+            stage.setScene(scene);
 
-                BackBtnTools.addToBackBtnStack("../view/books-page.fxml");
+            stage.show();
 
-            } catch (IOException e) {
-                AlertTools.AlertErrorContactSupport();
-            }
-        } else {
-            AlertTools.AlertError("Error!", "No Book Selected!", "Please select a book from the table.");
+            BackBtn.addToBackBtnStack("../view/books-page.fxml");
+
+        } catch (IOException e) {
+            AlertTools.showAlertError("Switch scene problem!", "Contact support!");
         }
     }
 
     @FXML
-    void refreshBtn(ActionEvent event) {
+    void refreshOnAction(ActionEvent event) {
         setTable();
 
         setCategoryCb();
-
-        setDefaultSearchForm();
     }
 
-    private void setDefaultSearchForm() {
-        searchTf.setText("");
-        categoryCb.getSelectionModel().clearSelection();
-    }
+    @FXML
+    void searchOnAction(ActionEvent event) {
+        if (ValidationTools.isTextFieldEmptyOrNull(searchTf)
+                && categoryCb.getSelectionModel().getSelectedItem() == null) {
+            AlertTools.showAlertError("Error", "Please select a book or fill the search field");
 
-    private void setCategoryCb() {
-        categoryCb.getItems().clear();
-        try {
-            Connection connection = DatabaseTools.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM categories");
+            setTable();
 
-            while (resultSet.next()) {
-                categoryCb.getItems().add(new Category(resultSet.getInt("id"), resultSet.getString("name")));
-            }
+            setDefaultSearchTf();
 
-            DatabaseTools.closeQueryOperation(connection, statement, resultSet);
-        } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
+            return;
         }
-    }
 
-    private void setTable() {
         table.getItems().clear();
-        try {
-            Connection connection = DatabaseTools.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(
-                    "SELECT * FROM books INNER JOIN categories ON books.category_id = categories.id INNER JOIN purchasings ON purchasings.id = books.purchasing_id;");
 
-            while (resultSet.next()) {
-                Book book = new Book(resultSet.getInt("books.id"), resultSet.getString("books.name"),
-                        new Category(resultSet.getInt("categories.id"), resultSet.getString("categories.name")),
-                        resultSet.getInt("books.availability"), resultSet.getString("purchasings.date"),
-                        resultSet.getDouble("books.bought_price"), resultSet.getInt("books.id"));
-                table.getItems().add(book);
+        if (!ValidationTools.isTextFieldEmptyOrNull(searchTf)
+                && categoryCb.getSelectionModel().getSelectedItem() == null) {
+            Connection connection = null;
+            PreparedStatement preparedStatement = null;
+            ResultSet resultSet = null;
+
+            try {
+                connection = DatabaseTools.getConnection();
+                preparedStatement = connection.prepareStatement(
+                        "SELECT books.id, books.name, books.availability, categories.id, categories.name, bookkeepings.payment_date AS purchase_date FROM books INNER JOIN  categories ON books.category_id = categories.id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id INNER JOIN bookkeepings ON purchasings_books_details.purchasing_id = bookkeepings.id where books.name LIKE ?");
+                preparedStatement.setString(1, "%" + searchTf.getText() + "%");
+                resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    table.getItems().add(new Book(
+                            resultSet.getInt("books.id"),
+                            resultSet.getString("books.name"),
+                            resultSet.getString("books.availability"),
+                            new Category(resultSet.getInt("categories.id"), resultSet.getString("categories.name")),
+                            resultSet.getString("purchase_date")));
+                }
+            } catch (Exception e) {
+                AlertTools.showAlertError("Error", e.getMessage());
+            } finally {
+                try {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                    if (preparedStatement != null) {
+                        preparedStatement.close();
+                    }
+                    if (connection != null) {
+                        connection.close();
+                    }
+                } catch (Exception e) {
+                    AlertTools.showAlertError("Error", e.getMessage());
+                }
             }
 
-            DatabaseTools.closeQueryOperation(connection, statement, resultSet);
-        } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
+            setDefaultSearchTf();
+
+            return;
         }
+
+        if (ValidationTools.isTextFieldEmptyOrNull(searchTf)
+                && categoryCb.getSelectionModel().getSelectedItem() != null) {
+            Connection connection = null;
+            PreparedStatement preparedStatement = null;
+            ResultSet resultSet = null;
+
+            try {
+                connection = DatabaseTools.getConnection();
+                preparedStatement = connection.prepareStatement(
+                        "SELECT books.id, books.name, books.availability, categories.id, categories.name, bookkeepings.payment_date AS purchase_date FROM books INNER JOIN  categories ON books.category_id = categories.id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id INNER JOIN bookkeepings ON purchasings_books_details.purchasing_id = bookkeepings.id WHERE categories.id = ?");
+                preparedStatement.setInt(1, categoryCb.getSelectionModel().getSelectedItem().getId());
+                resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    table.getItems().add(new Book(
+                            resultSet.getInt("books.id"),
+                            resultSet.getString("books.name"),
+                            resultSet.getString("books.availability"),
+                            new Category(resultSet.getInt("categories.id"), resultSet.getString("categories.name")),
+                            resultSet.getString("purchase_date")));
+                }
+            } catch (Exception e) {
+                AlertTools.showAlertError("Error", e.getMessage());
+            } finally {
+                try {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                    if (preparedStatement != null) {
+                        preparedStatement.close();
+                    }
+                    if (connection != null) {
+                        connection.close();
+                    }
+                } catch (Exception e) {
+                    AlertTools.showAlertError("Error", e.getMessage());
+                }
+            }
+
+            setDefaultSearchTf();
+
+            return;
+        }
+
+        if (!ValidationTools.isTextFieldEmptyOrNull(searchTf)
+                && categoryCb.getSelectionModel().getSelectedItem() != null) {
+            Connection connection = null;
+            PreparedStatement preparedStatement = null;
+            ResultSet resultSet = null;
+            try {
+                connection = DatabaseTools.getConnection();
+                preparedStatement = connection.prepareStatement(
+                        "SELECT books.id, books.name, books.availability, categories.id, categories.name, bookkeepings.payment_date AS purchase_date FROM books INNER JOIN  categories ON books.category_id = categories.id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id INNER JOIN bookkeepings ON purchasings_books_details.purchasing_id = bookkeepings.id WHERE categories.id = ? AND books.name LIKE ? ");
+                preparedStatement.setInt(1, categoryCb.getSelectionModel().getSelectedItem().getId());
+                preparedStatement.setString(2, "%" + searchTf.getText() + "%");
+
+                resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    table.getItems().add(new Book(
+                            resultSet.getInt("books.id"),
+                            resultSet.getString("books.name"),
+                            resultSet.getString("books.availability"),
+                            new Category(resultSet.getInt("categories.id"), resultSet.getString("categories.name")),
+                            resultSet.getString("purchase_date")));
+                }
+            } catch (Exception e) {
+                AlertTools.showAlertError("Error", e.getMessage());
+            } finally {
+                try {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                    if (preparedStatement != null) {
+                        preparedStatement.close();
+                    }
+                    if (connection != null) {
+                        connection.close();
+                    }
+                } catch (Exception e) {
+                    AlertTools.showAlertError("Error", e.getMessage());
+                }
+            }
+
+            setDefaultSearchTf();
+
+            return;
+        }
+
+        setTable();
+
+        setDefaultSearchTf();
     }
 
-    private void queryAllWithCategory() {
-        try {
-            table.getItems().clear();
+    private void setDefaultSearchTf() {
+        UiTools.setTextFieldEmpty(searchTf);
 
-            Connection connection = DatabaseTools.getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM books INNER JOIN categories ON books.category_id = categories.id INNER JOIN purchasings ON purchasings.id = books.purchasing_id WHERE  categories.id = ?;");
-            statement.setInt(1, categoryCb.getSelectionModel().getSelectedItem().getId());
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                Book book = new Book(resultSet.getInt("books.id"), resultSet.getString("books.name"),
-                        new Category(resultSet.getInt("categories.id"), resultSet.getString("categories.name")),
-                        resultSet.getInt("books.availability"), resultSet.getString("purchasings.date"),
-                        resultSet.getDouble("books.bought_price"), resultSet.getInt("books.id"));
-
-                table.getItems().add(book);
-            }
-
-            DatabaseTools.closeQueryOperation(connection, statement, resultSet);
-        } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
-        }
-    }
-
-    private void queryAllWithBookName() {
-        try {
-            table.getItems().clear();
-
-            Connection connection = DatabaseTools.getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM books INNER JOIN categories ON books.category_id = categories.id INNER JOIN purchasings ON purchasings.id = books.purchasing_id WHERE books.name LIKE ?;");
-            statement.setString(1, "%" + searchTf.getText() + "%");
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                Book book = new Book(resultSet.getInt("books.id"), resultSet.getString("books.name"),
-                        new Category(resultSet.getInt("categories.id"), resultSet.getString("categories.name")),
-                        resultSet.getInt("books.availability"), resultSet.getString("purchasings.date"),
-                        resultSet.getDouble("books.bought_price"), resultSet.getInt("books.id"));
-
-                table.getItems().add(book);
-            }
-
-            DatabaseTools.closeQueryOperation(connection, statement, resultSet);
-        } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
-        }
-    }
-
-    private void queryAllWithBookNameAndCategory() {
-        try {
-            table.getItems().clear();
-
-            Connection connection = DatabaseTools.getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM books INNER JOIN categories ON books.category_id = categories.id INNER JOIN purchasings ON purchasings.id = books.purchasing_id WHERE books.name LIKE ? AND categories.id = ?;");
-            statement.setString(1, "%" + searchTf.getText() + "%");
-            statement.setInt(2, categoryCb.getSelectionModel().getSelectedItem().getId());
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                Book book = new Book(resultSet.getInt("books.id"), resultSet.getString("books.name"),
-                        new Category(resultSet.getInt("categories.id"), resultSet.getString("categories.name")),
-                        resultSet.getInt("books.availability"), resultSet.getString("purchasings.date"),
-                        resultSet.getDouble("books.bought_price"), resultSet.getInt("books.id"));
-
-                table.getItems().add(book);
-            }
-
-            DatabaseTools.closeQueryOperation(connection, statement, resultSet);
-        } catch (Exception e) {
-            AlertTools.AlertErrorContactSupport();
-        }
+        categoryCb.getSelectionModel().clearSelection();
     }
 
 }
