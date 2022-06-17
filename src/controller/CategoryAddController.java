@@ -3,11 +3,10 @@ package controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
-import model.Category;
-import tools.BackBtnTools;
+import tools.AlertTools;
+import tools.BackBtn;
 import tools.UiTools;
 import tools.ValidationTools;
-import tools.AlertTools;
 
 public class CategoryAddController {
 
@@ -15,44 +14,40 @@ public class CategoryAddController {
     private TextField categoryNameTf;
 
     @FXML
-    void addBtn(ActionEvent event) {
+    void addOnAction(ActionEvent event) {
         if (ValidationTools.isTextFieldEmptyOrNull(categoryNameTf)) {
-            AlertTools.AlertError("Error!", "Category Name Text Field Is Empty!",
-                    "Please Fill Category Name Text Field!");
+            AlertTools.showAlertError("Text field is empty!", "Please fill in all fields");
 
-            setDefaultTf();
-
-            return;
-        }
-
-        if (Category.isCategoryNameExist(categoryNameTf.getText())) {
-            AlertTools.AlertError("Error!", "Category Name Is Already Exist!", "Please Enter Another Category Name!");
-
-            setDefaultTf();
+            UiTools.setTextFieldEmpty(categoryNameTf);
 
             return;
         }
 
-        if (Category.addCategory(categoryNameTf.getText())) {
-            AlertTools.AlertInformation("Success!", "Category Added Successfully!",
-                    "Category Name: " + categoryNameTf.getText());
+        if (!ValidationTools.isTextIsValid(3, 46, categoryNameTf.getText())) {
+            AlertTools.showAlertError("Text is invalid!", "Please check your text");
 
-            BackBtnTools.backBtnActionEvent(event);
+            UiTools.setTextFieldEmpty(categoryNameTf);
+
+            return;
+        }
+
+        if (model.Category.addNewCategory(categoryNameTf.getText())) {
+            AlertTools.showAlertInformation("Category added!", "Category added successfully");
+
+            BackBtn.backBtnActionEvent(event);
         } else {
-            AlertTools.AlertError("Error!", "Category Not Added!", "Please Try Again!");
+            AlertTools.showAlertError("Category already exists!", "Please check your category name");
 
-            setDefaultTf();
+            UiTools.setTextFieldEmpty(categoryNameTf);
+
+            return;
         }
 
     }
 
     @FXML
-    void backBtn(ActionEvent event) {
-        BackBtnTools.backBtnActionEvent(event);
-    }
-
-    void setDefaultTf() {
-        UiTools.setTextFieldEmpty(categoryNameTf);
+    void backOnAction(ActionEvent event) {
+        BackBtn.backBtnActionEvent(event);
     }
 
 }
