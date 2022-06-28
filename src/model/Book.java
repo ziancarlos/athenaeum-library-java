@@ -17,6 +17,12 @@ public class Book {
         this.category = category;
     }
 
+    public Book(int id, String name, Category category) {
+        this.id = new SimpleIntegerProperty(id);
+        this.name = new SimpleStringProperty(name);
+        this.category = category;
+    }
+
     public Book(int id, String name, String availability, Category category, String purchaseDate) {
         this.id = new SimpleIntegerProperty(id);
         this.name = new SimpleStringProperty(name);
@@ -74,6 +80,11 @@ public class Book {
 
     public void setPurchaseDate(String purchaseDate) {
         this.purchaseDate.set(purchaseDate);
+    }
+
+    @Override
+    public String toString() {
+        return getId() + ". " + getName();
     }
 
 }

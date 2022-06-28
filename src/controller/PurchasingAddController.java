@@ -6,9 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import com.mysql.cj.jdbc.PreparedStatementWrapper;
-import com.mysql.cj.x.protobuf.MysqlxPrepare.Prepare;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -245,6 +242,8 @@ public class PurchasingAddController {
                         AlertTools.showAlertConfirmation("Purchasing is done!", "Purchasing is done");
 
                         purchasingAddTempList.clear();
+
+                        BackBtn.backBtnActionEvent(event);
 
                         setTotalAmount();
 

@@ -7,20 +7,20 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CategoryAddController">
    <children>
       <Text layoutX="22.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="New Category">
          <font>
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
-      <Button layoutX="517.0" layoutY="22.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="64.0" text="Back" />
-      <TextField layoutX="22.0" layoutY="92.0" prefHeight="25.0" prefWidth="498.0" />
+      <Button layoutX="517.0" layoutY="22.0" mnemonicParsing="false" onAction="#backOnAction" prefHeight="32.0" prefWidth="64.0" text="Back" />
+      <TextField fx:id="categoryNameTf" layoutX="22.0" layoutY="92.0" prefHeight="25.0" prefWidth="498.0" />
       <Label layoutX="22.0" layoutY="69.0" text="Category Name">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <Button layoutX="22.0" layoutY="159.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="498.0" text="Add Category" />
+      <Button layoutX="22.0" layoutY="159.0" mnemonicParsing="false" onAction="#addOnAction" prefHeight="25.0" prefWidth="498.0" text="Add Category" />
    </children>
 </AnchorPane>

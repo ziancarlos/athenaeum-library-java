@@ -16,7 +16,7 @@
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
-      <Button layoutX="506.0" layoutY="20.0" mnemonicParsing="false" onAction="#backBtn" prefHeight="32.0" prefWidth="64.0" text="Back" />
+      <Button layoutX="506.0" layoutY="20.0" mnemonicParsing="false" onAction="#backOnAction" prefHeight="32.0" prefWidth="64.0" text="Back" />
       <Label layoutX="21.0" layoutY="60.0" text="Customer Name">
          <font>
             <Font size="16.0" />
@@ -49,7 +49,7 @@
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
-      <Button layoutX="21.0" layoutY="327.0" mnemonicParsing="false" onAction="#paidBtn" prefHeight="25.0" prefWidth="549.0" text="Paid" />
-      <Button layoutX="291.0" layoutY="60.0" mnemonicParsing="false" onAction="#deleteBtn" prefHeight="25.0" prefWidth="64.0" text="Delete" />
+      <Button layoutX="26.0" layoutY="338.0" mnemonicParsing="false" onAction="#paidOnAction" prefHeight="25.0" prefWidth="549.0" text="Paid" />
+      <Button layoutX="291.0" layoutY="60.0" mnemonicParsing="false" onAction="#deleteOnAction" prefHeight="25.0" prefWidth="64.0" text="Delete" />
    </children>
 </AnchorPane>

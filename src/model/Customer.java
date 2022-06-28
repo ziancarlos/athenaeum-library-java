@@ -28,4 +28,9 @@ public class Customer extends User {
     public void setBlacklisted(String blacklisted) {
         this.blacklisted.set(blacklisted);
     }
+
+    @Override
+    public String toString() {
+        return getUsername();
+    }
 }

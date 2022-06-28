@@ -2,12 +2,12 @@ package controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import model.Customer;
 import tools.AlertTools;
 import tools.BackBtn;
 import tools.CurrentUser;
+import tools.Procedure;
 import tools.SwitchSceneTools;
 
 public class MenuController {
@@ -39,6 +39,8 @@ public class MenuController {
     private Button purchasing;
 
     public void initialize() {
+        Procedure.fineAllLateBorrowings();
+
         if (CurrentUser.currentUser.getRole().equals("customer")) {
             penalties.setVisible(false);
             borrowing.setVisible(false);
@@ -112,6 +114,9 @@ public class MenuController {
     @FXML
     void bookkeepingOnAction(ActionEvent event) {
 
+        SwitchSceneTools.changeSceneActionEvent(event, "../view/bookkeepings-page.fxml");
+
+        BackBtn.addToBackBtnStack("../view/menu-page.fxml");
     }
 
     @FXML
@@ -124,7 +129,9 @@ public class MenuController {
 
     @FXML
     void borrowingOnAction(ActionEvent event) {
+        SwitchSceneTools.changeSceneActionEvent(event, "../view/borrowings-page.fxml");
 
+        BackBtn.addToBackBtnStack("../view/menu-page.fxml");
     }
 
     @FXML

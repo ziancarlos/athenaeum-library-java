@@ -9,14 +9,14 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BorrowingAddController">
    <children>
       <Text layoutX="21.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="New Borrowing">
          <font>
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
-      <Button layoutX="506.0" layoutY="20.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="64.0" text="Back" />
+      <Button layoutX="506.0" layoutY="20.0" mnemonicParsing="false" onAction="#backOnAction" prefHeight="32.0" prefWidth="64.0" text="Back" />
       <Label layoutX="21.0" layoutY="60.0" text="Customer Name">
          <font>
             <Font size="16.0" />
@@ -32,23 +32,24 @@
             <Font size="16.0" />
          </font>
       </Label>
-      <ComboBox layoutX="21.0" layoutY="159.0" prefHeight="25.0" prefWidth="251.0" />
-      <ComboBox layoutX="21.0" layoutY="206.0" prefHeight="25.0" prefWidth="251.0" />
-      <Button layoutX="21.0" layoutY="242.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="251.0" text="Add" />
-      <TableView layoutX="291.0" layoutY="67.0" prefHeight="199.0" prefWidth="279.0">
+      <ComboBox fx:id="bookCb" layoutX="21.0" layoutY="159.0" prefHeight="25.0" prefWidth="251.0" />
+      <ComboBox fx:id="borrowingPeriodCb" layoutX="21.0" layoutY="206.0" prefHeight="25.0" prefWidth="251.0" />
+      <Button layoutX="21.0" layoutY="242.0" mnemonicParsing="false" onAction="#addBtn" prefHeight="25.0" prefWidth="251.0" text="Add" />
+      <TableView fx:id="table" layoutX="291.0" layoutY="93.0" prefHeight="173.0" prefWidth="279.0">
         <columns>
-          <TableColumn prefWidth="93.0" text="Book Name" />
-          <TableColumn prefWidth="64.0" text="Due Date" />
-            <TableColumn prefWidth="61.0" text="Period" />
-            <TableColumn prefWidth="60.0" text="Amount" />
+          <TableColumn fx:id="bookNameCol" prefWidth="93.0" text="Book Name" />
+          <TableColumn fx:id="dueDateCol" prefWidth="64.0" text="Due Date" />
+            <TableColumn fx:id="periodCol" prefWidth="61.0" text="Period" />
+            <TableColumn fx:id="amountCol" minWidth="0.0" prefWidth="60.0" text="Amount" />
         </columns>
       </TableView>
-      <ComboBox layoutX="21.0" layoutY="85.0" prefHeight="25.0" prefWidth="251.0" />
-      <Text layoutX="362.0" layoutY="304.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Total :" wrappingWidth="207.40625">
+      <ComboBox fx:id="customerCb" layoutX="21.0" layoutY="85.0" prefHeight="25.0" prefWidth="251.0" />
+      <Text fx:id="totalText" layoutX="362.0" layoutY="304.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Total :" wrappingWidth="207.40625">
          <font>
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
-      <Button layoutX="21.0" layoutY="327.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="549.0" text="Paid" />
+      <Button layoutX="26.0" layoutY="338.0" mnemonicParsing="false" onAction="#paidOnAction" prefHeight="25.0" prefWidth="549.0" text="Paid" />
+      <Button layoutX="291.0" layoutY="60.0" mnemonicParsing="false" onAction="#deleteOnAction" prefHeight="25.0" prefWidth="64.0" text="Delete" />
    </children>
 </AnchorPane>

@@ -22,7 +22,6 @@ import tools.CurrentUser;
 import tools.DatabaseTools;
 import tools.UiTools;
 import tools.ValidationTools;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -132,7 +131,7 @@ public class BookController {
         try {
             connection = DatabaseTools.getConnection();
             preparedStatement = connection.prepareStatement(
-                    "SELECT books.id, books.name, books.availability, categories.id, categories.name, bookkeepings.payment_date AS purchase_date FROM books INNER JOIN  categories ON books.category_id = categories.id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id INNER JOIN bookkeepings ON purchasings_books_details.purchasing_id = bookkeepings.id");
+                    "SELECT books.id, books.name,books.availability,categories.id, categories.name, bookkeepings.payment_date AS purchase_date FROM  books INNER JOIN categories ON categories.id = books.category_id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id  INNER JOIN purchasings ON purchasings_books_details.purchasing_id = purchasings.id LEFT JOIN bookkeepings ON purchasings.id = bookkeepings.purchasing_id;");
             resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {

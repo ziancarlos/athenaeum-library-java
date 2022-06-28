@@ -11,25 +11,26 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BorrowingController">
    <children>
-      <Button layoutX="506.0" layoutY="20.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="64.0" text="Back" />
+      <Button layoutX="514.0" layoutY="66.0" mnemonicParsing="false" onAction="#searchBtn" prefHeight="25.0" prefWidth="56.0" text="Search" />
+      <Button layoutX="506.0" layoutY="20.0" mnemonicParsing="false" onAction="#backOnAction" prefHeight="32.0" prefWidth="64.0" text="Back" />
       <Text layoutX="21.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Borrowing">
          <font>
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
-      <Button layoutX="21.0" layoutY="331.0" mnemonicParsing="false" onAction="#newBorrowingBtn" prefHeight="26.0" prefWidth="126.0" text="New Borrowing" />
-      <Button layoutX="158.0" layoutY="331.0" mnemonicParsing="false" onAction="#manageBorrowingBtn" prefHeight="26.0" prefWidth="126.0" text="Manage Borrowing" />
+      <Button layoutX="21.0" layoutY="331.0" mnemonicParsing="false" onAction="#newBorrowingOnAction" prefHeight="26.0" prefWidth="126.0" text="New Borrowing" />
+      <Button layoutX="158.0" layoutY="331.0" mnemonicParsing="false" onAction="#manageBorrowingOnAction" prefHeight="26.0" prefWidth="126.0" text="Manage Borrowing" />
       <TableView fx:id="table" layoutX="21.0" layoutY="100.0" prefHeight="223.0" prefWidth="549.0">
         <columns>
           <TableColumn fx:id="idCol" prefWidth="39.0" text="ID" />
           <TableColumn fx:id="customerCol" prefWidth="87.0" text="Customer" />
             <TableColumn fx:id="booksBorrowedCol" prefWidth="126.0" text="Books Borrowed" />
             <TableColumn fx:id="borrowingStatusCol" prefWidth="137.0" text="Borrowing Status" />
-            <TableColumn fx:id="borrowingCol" prefWidth="159.0" text="Borrowing Date" />
+            <TableColumn fx:id="borrowingDateCol" prefWidth="159.0" text="Borrowing Date" />
         </columns>
       </TableView>
-      <Button layoutX="514.0" layoutY="66.0" mnemonicParsing="false" onAction="#searchBtn" prefHeight="25.0" prefWidth="56.0" text="Search" />
       <TextField fx:id="searchTf" layoutX="182.0" layoutY="66.0" prefHeight="25.0" prefWidth="144.0" />
-      <ComboBox fx:id="cb" layoutX="21.0" layoutY="66.0" prefWidth="150.0" />
+      <ComboBox fx:id="statusCb" layoutX="21.0" layoutY="66.0" prefWidth="150.0" />
+      <Button layoutX="300.0" layoutY="331.0" mnemonicParsing="false" onAction="#refreshOnAction" prefHeight="26.0" prefWidth="126.0" text="Refresh" />
    </children>
 </AnchorPane>

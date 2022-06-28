@@ -1,8 +1,6 @@
 package tools;
 
 import java.util.Optional;
-
-import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
 public class AlertTools {

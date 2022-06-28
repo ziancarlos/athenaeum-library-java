@@ -8,23 +8,26 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BorrowingManageController">
    <children>
       <Text layoutX="21.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Manage Borrowing">
          <font>
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
-      <Button layoutX="506.0" layoutY="20.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="64.0" text="Back" />
-      <ListView layoutX="21.0" layoutY="100.0" prefHeight="250.0" prefWidth="192.0" />
-      <Button layoutX="409.0" layoutY="63.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="83.0" text="Lost/Broken" />
-      <Button layoutX="498.0" layoutY="63.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="72.0" text="Returned" />
-      <TableView layoutX="232.0" layoutY="100.0" prefHeight="200.0" prefWidth="338.0">
+      <Button layoutX="506.0" layoutY="20.0" mnemonicParsing="false" onAction="#backOnAction" prefHeight="32.0" prefWidth="64.0" text="Back" />
+      <ListView fx:id="lv" layoutX="21.0" layoutY="100.0" prefHeight="250.0" prefWidth="192.0" />
+      <Button layoutX="320.0" layoutY="63.0" mnemonicParsing="false" onAction="#brokenOnAction" prefHeight="25.0" prefWidth="83.0" text="Broken" />
+      <Button layoutX="498.0" layoutY="63.0" mnemonicParsing="false" onAction="#returnedOnAction" prefHeight="25.0" prefWidth="72.0" text="Returned" />
+      <TableView fx:id="table" layoutX="226.0" layoutY="100.0" prefHeight="200.0" prefWidth="338.0">
         <columns>
-          <TableColumn prefWidth="121.0" text="Book Name" />
-          <TableColumn prefWidth="109.0" text="Period" />
-            <TableColumn prefWidth="107.0" text="Due Date" />
+          <TableColumn fx:id="bookCol" prefWidth="102.0" text="Book Name" />
+          <TableColumn fx:id="dueDateCol" prefWidth="87.0" text="Due Date" />
+            <TableColumn minWidth="0.0" prefWidth="0.0" text="Due Date" />
+            <TableColumn fx:id="statusCol" prefWidth="78.0" text="Status" />
+            <TableColumn fx:id="amountCol" minWidth="0.0" prefWidth="70.0" text="Price" />
         </columns>
       </TableView>
+      <Button layoutX="226.0" layoutY="63.0" mnemonicParsing="false" onAction="#lostOnAction" prefHeight="25.0" prefWidth="83.0" text="Lost" />
    </children>
 </AnchorPane>
