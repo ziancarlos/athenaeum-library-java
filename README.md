@@ -126,7 +126,7 @@
 <!-- CONTACT -->
 ## Contact
 
-Project Link: [https://github.com/ziancarlos/burger-queen-java](https://github.com/ziancarlos/burger-queen-java)
+Project Link: [https://github.com/ziancarlos/athenaeum-library-java](https://github.com/ziancarlos/athenaeum-library-java)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
