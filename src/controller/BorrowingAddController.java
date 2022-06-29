@@ -9,8 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import com.mysql.cj.x.protobuf.MysqlxPrepare.Prepare;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -111,10 +109,12 @@ public class BorrowingAddController {
             }
 
             // use add() method to add the days to the given date
-            cal.add(Calendar.DATE, 1);
+            cal.add(Calendar.DATE, period);
             String dateAfter = sdf.format(cal.getTime());
 
             dueDate = dateAfter;
+
+            System.out.println(dueDate);
 
         } catch (Exception e) {
             AlertTools.showAlertError("Error", e.getMessage());

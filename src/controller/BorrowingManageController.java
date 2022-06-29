@@ -62,6 +62,125 @@ public class BorrowingManageController {
 
             return;
         }
+
+        Connection connection = null;
+        PreparedStatement statementSelect = null;
+        PreparedStatement statementUpdate = null;
+        PreparedStatement statementUpdateBookAvail = null;
+        PreparedStatement statementInsertPenalties = null;
+        PreparedStatement statementSelectBook = null;
+        CallableStatement callableStatement = null;
+        ResultSet resultSet = null;
+        int affectedRows;
+
+        try {
+            connection = DatabaseTools.getConnection();
+            connection.setAutoCommit(false);
+
+            statementSelectBook = connection.prepareStatement(
+                    "SELECT purchasings_books_details.purchasing_price FROM books INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id WHERE books.id = ?");
+            statementSelectBook.setInt(1, book.getBook().getId());
+
+            resultSet = statementSelectBook.executeQuery();
+
+            if (resultSet.next()) {
+                double bookPrice = resultSet.getDouble("purchasings_books_details.purchasing_price");
+
+                statementSelect = connection.prepareStatement(
+                        "SELECT * FROM borrowed_books WHERE borrowing_id = ? AND book_id = ? FOR UPDATE");
+
+                statementSelect.setInt(1, borrowing.getId());
+                statementSelect.setInt(2, book.getBook().getId());
+
+                resultSet = statementSelect.executeQuery();
+                if (resultSet.next()) {
+
+                    if (resultSet.getString("status").equals("on-going")) {
+
+                        statementUpdate = connection.prepareStatement(
+                                "UPDATE borrowed_books SET status = 'broken' WHERE borrowing_id = ? AND book_id = ? ");
+                        statementUpdate.setInt(1, borrowing.getId());
+                        statementUpdate.setInt(2, book.getBook().getId());
+
+                        affectedRows = statementUpdate.executeUpdate();
+                        if (affectedRows > 0) {
+                            statementInsertPenalties = connection.prepareStatement(
+                                    "INSERT INTO penalties(penalty_type, penalty_date, payment_status, borrowed_book_book_id, borrowed_book_borrowing_customer_id, borrowed_book_borrowing_id, amount) VALUES ('broken', NOW(), 'unpaid', ?, ?, ?, ?)");
+
+                            statementInsertPenalties.setInt(1, book.getBook().getId());
+                            statementInsertPenalties.setInt(2, resultSet.getInt("borrowing_customer_id"));
+                            statementInsertPenalties.setInt(3, resultSet.getInt("borrowing_id"));
+                            statementInsertPenalties.setDouble(4, bookPrice);
+
+                            affectedRows = statementInsertPenalties.executeUpdate();
+
+                            if (affectedRows > 0) {
+                                String SQL = "{call checkIfSpecifiedBorrowingIsCompleted (?)}";
+                                callableStatement = connection.prepareCall(SQL);
+                                callableStatement.setInt(1, borrowing.getId());
+
+                                callableStatement.executeUpdate();
+
+                                connection.commit();
+
+                                AlertTools.showAlertInformation("Success!", "Succeed Claimed Broken Books!");
+
+                                BackBtn.backBtnActionEvent(event);
+                            } else {
+                                connection.rollback();
+
+                                AlertTools.showAlertError("Error!", "Contact Support!!");
+                            }
+                        } else {
+                            connection.rollback();
+
+                            AlertTools.showAlertError("Error!", "Contact Support!!");
+                        }
+                    } else {
+                        connection.rollback();
+
+                        AlertTools.showAlertError("Error!", "This books have been claimed!");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            try {
+                connection.rollback();
+            } catch (Exception e1) {
+                AlertTools.showAlertError("Error!", e1.getMessage());
+            }
+
+            e.printStackTrace();
+
+            AlertTools.showAlertError("Error!", e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+                if (statementSelect != null) {
+                    statementSelect.close();
+                }
+                if (statementUpdate != null) {
+                    statementUpdate.close();
+                }
+                if (callableStatement != null) {
+                    callableStatement.close();
+                }
+                if (statementUpdateBookAvail != null) {
+                    statementUpdateBookAvail.close();
+                }
+                if (statementSelectBook != null) {
+                    statementSelectBook.close();
+                }
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (Exception e) {
+                AlertTools.showAlertError("Error!", e.getMessage());
+            }
+
+        }
     }
 
     @FXML

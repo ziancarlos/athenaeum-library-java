@@ -37,10 +37,10 @@
       <Button layoutX="21.0" layoutY="242.0" mnemonicParsing="false" onAction="#addBtn" prefHeight="25.0" prefWidth="251.0" text="Add" />
       <TableView fx:id="table" layoutX="291.0" layoutY="93.0" prefHeight="173.0" prefWidth="279.0">
         <columns>
-          <TableColumn fx:id="bookNameCol" prefWidth="93.0" text="Book Name" />
-          <TableColumn fx:id="dueDateCol" prefWidth="64.0" text="Due Date" />
-            <TableColumn fx:id="periodCol" prefWidth="61.0" text="Period" />
-            <TableColumn fx:id="amountCol" minWidth="0.0" prefWidth="60.0" text="Amount" />
+          <TableColumn fx:id="bookNameCol" prefWidth="75.0" text="Book Name" />
+          <TableColumn fx:id="dueDateCol" prefWidth="108.0" text="Due Date" />
+            <TableColumn fx:id="periodCol" prefWidth="42.0" text="Period" />
+            <TableColumn fx:id="amountCol" minWidth="0.0" prefWidth="53.0" text="Amount" />
         </columns>
       </TableView>
       <ComboBox fx:id="customerCb" layoutX="21.0" layoutY="85.0" prefHeight="25.0" prefWidth="251.0" />

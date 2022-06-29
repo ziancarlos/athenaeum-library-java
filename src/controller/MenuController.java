@@ -203,6 +203,9 @@ public class MenuController {
 
     @FXML
     void penaltiesOnAction(ActionEvent event) {
+        SwitchSceneTools.changeSceneActionEvent(event, "../view/penalties-page.fxml");
+
+        BackBtn.addToBackBtnStack("../view/menu-page.fxml");
 
     }
 

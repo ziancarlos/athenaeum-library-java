@@ -116,6 +116,11 @@ public class BookkeepingController {
     }
 
     @FXML
+    void detailOnAction(ActionEvent event) {
+        BackBtn.backBtnActionEvent(event);
+    }
+
+    @FXML
     void backOnAction(ActionEvent event) {
         BackBtn.backBtnActionEvent(event);
     }
@@ -240,6 +245,8 @@ public class BookkeepingController {
         typeCb.getItems().add("Fine");
         typeCb.getItems().add("Purchasing");
         typeCb.getItems().add("Borrowing");
+
+        typeCb.setValue("All");
     }
 
 }

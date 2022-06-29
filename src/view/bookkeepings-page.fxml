@@ -30,5 +30,6 @@
       <DatePicker fx:id="endDate" layoutX="147.0" layoutY="67.0" prefHeight="25.0" prefWidth="114.0" />
       <ComboBox fx:id="typeCb" layoutX="278.0" layoutY="67.0" prefWidth="150.0" />
       <Button layoutX="507.0" layoutY="67.0" mnemonicParsing="false" onAction="#searchOnAction" prefHeight="25.0" prefWidth="72.0" text="Search" />
+      <Button layoutX="21.0" layoutY="341.0" mnemonicParsing="false" onAction="#detailOnAction" prefHeight="25.0" prefWidth="72.0" text="Detail" />
    </children>
 </AnchorPane>

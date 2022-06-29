@@ -43,16 +43,14 @@ public class Procedure {
                     statementCheckDateDiff.setString(1, resultSet2.getString("end_date"));
 
                     resultSet3 = statementCheckDateDiff.executeQuery();
-                    System.out.println("0.5");
                     if (resultSet3.next()) {
-                        System.out.println("1");
+
                         int dateDiff = resultSet3.getInt("dateDiff");
                         int dateInserted = 0;
                         int temp;
                         if (dateDiff > 0) {
-                            System.out.println("2");
                             statementCheckPenalties = connection.prepareStatement(
-                                    "SELECT COUNT(*)  AS count FROM penalties WHERE borrowed_book_borrow_id = ? AND borrowed_book_book_id = ? AND borrowed_book_borrow_customer_id = ?");
+                                    "SELECT COUNT(*)  AS count FROM penalties WHERE borrowed_book_borrowing_id = ? AND borrowed_book_book_id = ? AND borrowed_book_borrowing_customer_id = ?");
                             statementCheckPenalties.setInt(
                                     1, resultSet2.getInt("borrowing_id"));
                             statementCheckPenalties.setInt(
@@ -62,7 +60,7 @@ public class Procedure {
 
                             resultSet4 = statementCheckPenalties.executeQuery();
                             if (resultSet4.next()) {
-                                System.out.println("3");
+
                                 dateInserted = resultSet4.getInt("count");
                             }
 
@@ -92,7 +90,7 @@ public class Procedure {
                                     String dateAfter = sdf.format(cal.getTime());
 
                                     statementInsertPenalties = connection.prepareStatement(
-                                            "INSERT INTO penalties(penalty_type, penalty_date, payment_status, borrowed_book_book_id, borrowed_book_borrow_customer_id, borrowed_book_borrow_id, amount) VALUES ('late', ?, 'unpaid', ?, ?, ?, ?)",
+                                            "INSERT INTO penalties(penalty_type, penalty_date, payment_status, borrowed_book_book_id, borrowed_book_borrowing_customer_id, borrowed_book_borrowing_id, amount) VALUES ('late', ?, 'unpaid', ?, ?, ?, ?)",
                                             PreparedStatement.RETURN_GENERATED_KEYS);
                                     statementInsertPenalties.setString(1, dateAfter);
                                     statementInsertPenalties.setInt(2, resultSet2.getInt("book_id"));
