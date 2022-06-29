@@ -1,35 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BookkeepingController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BookkeepingDetailController">
    <children>
-      <Text layoutX="21.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Bookkeeping">
+      <Text layoutX="21.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Bookkeeping - Details">
          <font>
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
       <Button layoutX="515.0" layoutY="22.0" mnemonicParsing="false" onAction="#backOnAction" prefHeight="32.0" prefWidth="64.0" text="Back" />
-      <TableView fx:id="table" layoutX="21.0" layoutY="100.0" prefHeight="235.0" prefWidth="559.0">
+      <ListView fx:id="lv" layoutX="21.0" layoutY="70.0" prefHeight="265.0" prefWidth="260.0" />
+      <TableView fx:id="tableBorrowing" layoutX="290.0" layoutY="70.0" prefHeight="265.0" prefWidth="289.0">
          <columns>
-            <TableColumn fx:id="idCol" prefWidth="38.0" text="ID" />
-            <TableColumn fx:id="transactionTypeCol" prefWidth="190.0" text="Transaction Type" />
-            <TableColumn fx:id="doubEntryTypeCol" prefWidth="133.0" text="Double Entry Type" />
-            <TableColumn fx:id="dateCol" prefWidth="112.0" text="Transaction Date" />
-            <TableColumn fx:id="amountCol" prefWidth="85.0" text="Amount" />
+            <TableColumn fx:id="bookColBorrowing" prefWidth="102.0" text="Book Name" />
+            <TableColumn fx:id="dueDateColBorrowing" prefWidth="87.0" text="Due Date" />
+            <TableColumn minWidth="0.0" prefWidth="0.0" text="Due Date" />
+            <TableColumn fx:id="statusColBorrowing" prefWidth="78.0" text="Status" />
+            <TableColumn fx:id="amountColBorrowing" minWidth="0.0" prefWidth="70.0" text="Price" />
          </columns>
       </TableView>
-      <DatePicker fx:id="startDate" layoutX="21.0" layoutY="67.0" prefHeight="25.0" prefWidth="114.0" />
-      <DatePicker fx:id="endDate" layoutX="147.0" layoutY="67.0" prefHeight="25.0" prefWidth="114.0" />
-      <ComboBox fx:id="typeCb" layoutX="278.0" layoutY="67.0" prefWidth="150.0" />
-      <Button layoutX="507.0" layoutY="67.0" mnemonicParsing="false" onAction="#searchOnAction" prefHeight="25.0" prefWidth="72.0" text="Search" />
-      <Button layoutX="21.0" layoutY="341.0" mnemonicParsing="false" onAction="#detailOnAction" prefHeight="25.0" prefWidth="72.0" text="Detail" />
+      <TableView fx:id="tablePurchasing" layoutX="290.0" layoutY="60.0" prefHeight="275.0" prefWidth="289.0">
+         <columns>
+            <TableColumn fx:id="bookNameColPurchasing" prefWidth="135.0" text="Book Name" />
+            <TableColumn fx:id="categoryColPurchasing" minWidth="0.0" prefWidth="125.0" text="Category" />
+            <TableColumn fx:id="amountColPurchasing" prefWidth="161.0" text="Price" />
+         </columns>
+      </TableView>
    </children>
 </AnchorPane>

@@ -1,16 +1,22 @@
 package controller;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import model.Bookkeeping;
 import model.BookkeepingBorrowing;
 import model.BookkeepingPenalty;
@@ -117,7 +123,47 @@ public class BookkeepingController {
 
     @FXML
     void detailOnAction(ActionEvent event) {
-        BackBtn.backBtnActionEvent(event);
+        Bookkeeping bookkeeping = table.getSelectionModel().getSelectedItem();
+
+        if (bookkeeping == null) {
+            AlertTools.showAlertError("Error !", "Please select a bookkeeping!");
+
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/bookkeeping-detail-page.fxml"));
+
+            Parent root = loader.load();
+
+            BookkeepingDetailController bookkeepingDetailController = loader.getController();
+
+            switch (bookkeeping.getTransactionType()) {
+                case "purchasing":
+                    bookkeepingDetailController.setBookkeepingPurchasing((BookkeepingPurchasing) bookkeeping);
+                    break;
+                case "borrowing":
+                    bookkeepingDetailController.setBookkeepingBorrowing((BookkeepingBorrowing) bookkeeping);
+                    break;
+                case "fine":
+                    bookkeepingDetailController.setBookkeepingPenalty((BookkeepingPenalty) bookkeeping);
+                    break;
+            }
+
+            BackBtn.addToBackBtnStack("../view/bookkeepings-page.fxml");
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            Scene scene = new Scene(root);
+
+            stage.setScene(scene);
+
+            stage.show();
+
+        } catch (IOException e) {
+            AlertTools.showAlertError("Error!", e.getMessage());
+        }
+
     }
 
     @FXML
