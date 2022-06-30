@@ -1,15 +1,21 @@
 package controller;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import model.Customer;
 import model.Penalties;
 import tools.AlertTools;
@@ -57,6 +63,40 @@ public class PenaltiesController {
         setTypeCb();
 
         setCustomerCb();
+    }
+
+    @FXML
+    void detailOnAction(ActionEvent event) {
+        Penalties penalties = table.getSelectionModel().getSelectedItem();
+
+        if (penalties == null) {
+            AlertTools.showAlertError("Error!", "No Penalties Selected!");
+
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/penalties-detail-page.fxml"));
+
+            Parent root = loader.load();
+
+            PenaltiesDetailController controller = loader.getController();
+
+            controller.setPenalties(penalties);
+
+            BackBtn.addToBackBtnStack("../view/penalties-page.fxml");
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            Scene scene = new Scene(root);
+
+            stage.setScene(scene);
+
+            stage.show();
+
+        } catch (IOException e) {
+            AlertTools.showAlertError("Error!", e.getMessage());
+        }
     }
 
     private void setCustomerCb() {

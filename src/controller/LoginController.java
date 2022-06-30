@@ -3,8 +3,10 @@ package controller;
 import java.sql.SQLException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import model.User;
+import tools.AlertTools;
 import tools.BackBtn;
 import tools.CurrentUser;
 import tools.SwitchSceneTools;
@@ -13,7 +15,7 @@ import tools.ValidationTools;
 public class LoginController {
 
     @FXML
-    private TextField passwordTf;
+    private PasswordField passwordTf;
 
     @FXML
     private TextField usernameTf;
@@ -50,9 +52,12 @@ public class LoginController {
 
         CurrentUser.currentUser = user;
 
+        AlertTools.showAlertConfirmation("Sucessfull!", "You have succesfully login!");
+
         SwitchSceneTools.changeSceneActionEvent(event, "../view/menu-page.fxml");
 
         BackBtn.addToBackBtnStack("../view/menu-page.fxml");
+
     }
 
     private void settAllTfDefault() {

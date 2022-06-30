@@ -233,6 +233,8 @@ public class MenuController {
         CurrentUser.currentUser = null;
 
         BackBtn.clearBackBtnStack();
+
+        AlertTools.showAlertConfirmation("Logout!", "Succesfully logout!");
     }
 
 }

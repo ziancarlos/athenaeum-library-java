@@ -9,12 +9,21 @@ public class Book {
     private SimpleStringProperty availability;
     private Category category;
     private SimpleStringProperty purchaseDate;
+    private double price;
 
     public Book(int id, String name, String availability, Category category) {
         this.id = new SimpleIntegerProperty(id);
         this.name = new SimpleStringProperty(name);
         this.availability = new SimpleStringProperty(availability);
         this.category = category;
+    }
+
+    public Book(int id, String name, String availability, Category category, double price) {
+        this.id = new SimpleIntegerProperty(id);
+        this.name = new SimpleStringProperty(name);
+        this.availability = new SimpleStringProperty(availability);
+        this.category = category;
+        this.price = price;
     }
 
     public Book(int id, String name, Category category) {
@@ -80,6 +89,14 @@ public class Book {
 
     public void setPurchaseDate(String purchaseDate) {
         this.purchaseDate.set(purchaseDate);
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public double getPrice() {
+        return price;
     }
 
     @Override

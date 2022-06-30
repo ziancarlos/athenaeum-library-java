@@ -29,6 +29,6 @@
       <Button layoutX="507.0" layoutY="67.0" mnemonicParsing="false" onAction="#searchOnAction" prefHeight="25.0" prefWidth="72.0" text="Search" />
       <ComboBox fx:id="customerCb" layoutX="19.0" layoutY="67.0" prefHeight="25.0" prefWidth="161.0" />
       <Button layoutX="21.0" layoutY="347.0" mnemonicParsing="false" onAction="#paidOnAction" prefHeight="25.0" prefWidth="78.0" text="Paid" />
-      <Button layoutX="108.0" layoutY="347.0" mnemonicParsing="false" onAction="#paidOnAction" prefHeight="25.0" prefWidth="78.0" text="Detail" />
+      <Button layoutX="108.0" layoutY="347.0" mnemonicParsing="false" onAction="#detailOnAction" prefHeight="25.0" prefWidth="78.0" text="Detail" />
    </children>
 </AnchorPane>

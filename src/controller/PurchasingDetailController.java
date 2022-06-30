@@ -44,6 +44,7 @@ public class PurchasingDetailController {
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         categoryCol.setCellValueFactory(new PropertyValueFactory<>("category"));
+        amountCol.setCellValueFactory(new PropertyValueFactory<>("price"));
     }
 
     @FXML
@@ -79,7 +80,7 @@ public class PurchasingDetailController {
         try {
             connection = DatabaseTools.getConnection();
             preparedStatement = connection.prepareStatement(
-                    "SELECT books.id, books.name, books.availability, categories.id, categories.name FROM books INNER JOIN categories ON books.category_id = categories.id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id WHERE purchasings_books_details.purchasing_id = ?");
+                    "SELECT books.id, books.name, books.availability, categories.id, categories.name, purchasings_books_details.purchasing_price FROM books INNER JOIN categories ON books.category_id = categories.id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id WHERE purchasings_books_details.purchasing_id = ?");
             preparedStatement.setInt(1, purchasingDetail.getId());
 
             resultSet = preparedStatement.executeQuery();
@@ -87,7 +88,8 @@ public class PurchasingDetailController {
             while (resultSet.next()) {
                 Book book = new Book(resultSet.getInt("books.id"), resultSet.getString("books.name"),
                         resultSet.getString("books.availability"),
-                        new Category(resultSet.getInt("categories.id"), resultSet.getString("categories.name")));
+                        new Category(resultSet.getInt("categories.id"), resultSet.getString("categories.name")),
+                        resultSet.getDouble("purchasings_books_details.purchasing_price"));
                 table.getItems().add(book);
             }
         } catch (Exception e) {

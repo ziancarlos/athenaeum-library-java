@@ -24,12 +24,16 @@ public class AccountController {
             lv.getItems().add("Id : " + admin.getId());
             lv.getItems().add("Username : " + admin.getUsername());
             lv.getItems().add("Role : " + admin.getRole());
+
+            table.setVisible(false);
         } else if (CurrentUser.currentUser.getRole().equals("libarian")) {
             Libarian libarian = (Libarian) CurrentUser.currentUser;
             lv.getItems().add("Id : " + libarian.getId());
             lv.getItems().add("Username : " + libarian.getUsername());
             lv.getItems().add("Role : " + libarian.getRole());
             lv.getItems().add("Active : " + libarian.getActive());
+
+            table.setVisible(false);
         } else if (CurrentUser.currentUser.getRole().equals("customer")) {
             Customer customer = (Customer) CurrentUser.currentUser;
             lv.getItems().add("Id : " + customer.getId());
