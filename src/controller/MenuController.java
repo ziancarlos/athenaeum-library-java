@@ -180,7 +180,9 @@ public class MenuController {
 
     @FXML
     void historyOnAction(ActionEvent event) {
+        SwitchSceneTools.changeSceneActionEvent(event, "../view/history-page.fxml");
 
+        BackBtn.addToBackBtnStack("../view/menu-page.fxml");
     }
 
     @FXML

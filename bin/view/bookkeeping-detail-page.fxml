@@ -30,8 +30,8 @@
          <columns>
             <TableColumn fx:id="idColPurchasing" prefWidth="97.0" text="Book Id" />
             <TableColumn fx:id="nameColPurchasing" prefWidth="118.0" text="Book Name" />
-            <TableColumn fx:id="categoryColPurchasing" prefWidth="49.0" text="Category" />
-            <TableColumn fx:id="amountColPurchasing" prefWidth="97.0" text="Price" />
+            <TableColumn fx:id="categoryColPurchasing" prefWidth="71.0" text="Category" />
+            <TableColumn fx:id="amountColPurchasing" prefWidth="75.0" text="Price" />
          </columns>
       </TableView>
    </children>
