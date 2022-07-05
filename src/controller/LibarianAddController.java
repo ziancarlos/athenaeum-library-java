@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import model.User;
 import tools.AlertTools;
@@ -23,6 +24,13 @@ public class LibarianAddController {
 
     @FXML
     void addOnAction(ActionEvent event) {
+        if (AlertTools.showAlertConfirmationWithOptional("Confirmation!",
+                "Are you sure you want to add this new user?").get() == ButtonType.CANCEL) {
+
+            setDefaultTf();
+
+            return;
+        }
         if (ValidationTools.isTextFieldEmptyOrNull(usernameTf, passwordTf)) {
             tools.AlertTools.showAlertError("Username/Password text field is empty", "Please fill in all fields");
 
@@ -70,7 +78,7 @@ public class LibarianAddController {
             affectedRows = preparedStatement.executeUpdate();
 
             if (affectedRows > 0) {
-                AlertTools.showAlertConfirmation("Success", "Libarian added successfully!");
+                AlertTools.showAlertInformation("Success", "Libarian added successfully!");
 
                 BackBtn.backBtnActionEvent(event);
             } else {

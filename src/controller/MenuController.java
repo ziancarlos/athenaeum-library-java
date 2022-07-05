@@ -3,6 +3,7 @@ package controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import model.Customer;
 import tools.AlertTools;
 import tools.BackBtn;
@@ -230,13 +231,18 @@ public class MenuController {
 
     @FXML
     void logoutOnAction(ActionEvent event) {
+        if (AlertTools.showAlertConfirmationWithOptional("Logout Confirmation.", "Are you sure you want to logout?")
+                .get() == ButtonType.CANCEL) {
+            return;
+        }
+
         SwitchSceneTools.changeSceneActionEvent(event, "../view/login-page.fxml");
 
         CurrentUser.currentUser = null;
 
         BackBtn.clearBackBtnStack();
 
-        AlertTools.showAlertConfirmation("Logout!", "Succesfully logout!");
+        AlertTools.showAlertInformation("Logout!", "Succesfully logout!");
     }
 
 }

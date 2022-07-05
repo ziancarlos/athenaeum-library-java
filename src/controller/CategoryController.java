@@ -105,6 +105,12 @@ public class CategoryController {
     void deleteOnAction(ActionEvent event) {
         Category category = table.getSelectionModel().getSelectedItem();
 
+        if (AlertTools
+                .showAlertConfirmationWithOptional("Confirmation!", "Are you sure you want to delete this categor?")
+                .get() == ButtonType.CANCEL) {
+            return;
+        }
+
         if (category == null) {
             AlertTools.showAlertError("No category selected!", "Select a category!");
             return;

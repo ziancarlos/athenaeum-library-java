@@ -2,6 +2,7 @@ package controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import tools.AlertTools;
 import tools.BackBtn;
@@ -15,6 +16,13 @@ public class CategoryAddController {
 
     @FXML
     void addOnAction(ActionEvent event) {
+
+        if (AlertTools
+                .showAlertConfirmationWithOptional("Confirmation!", "Are you sure you want to add this category?")
+                .get() == ButtonType.CANCEL) {
+            return;
+        }
+
         if (ValidationTools.isTextFieldEmptyOrNull(categoryNameTf)) {
             AlertTools.showAlertError("Text field is empty!", "Please fill in all fields");
 

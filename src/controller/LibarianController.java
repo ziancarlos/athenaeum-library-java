@@ -71,6 +71,12 @@ public class LibarianController {
     void deactivateOnAction(ActionEvent event) {
         Libarian libarian = table.getSelectionModel().getSelectedItem();
 
+        if (AlertTools
+                .showAlertConfirmationWithOptional("Confirmation!", "Are you sure you want to deactivate this user?")
+                .get() == ButtonType.CANCEL) {
+            return;
+        }
+
         if (libarian == null) {
             AlertTools.showAlertError("Please select a libarian to deactivate", "Error");
 
@@ -103,7 +109,7 @@ public class LibarianController {
                     if (affectedRows > 0) {
                         connection.commit();
 
-                        AlertTools.showAlertConfirmationWithOptional("Libarian deactivated successfully",
+                        AlertTools.showAlertInformation("Libarian deactivated successfully",
                                 "Libarian deactivated successfully");
 
                         setTable();
@@ -158,6 +164,12 @@ public class LibarianController {
     void activateOnAction(ActionEvent event) {
         Libarian libarian = table.getSelectionModel().getSelectedItem();
 
+        if (AlertTools
+                .showAlertConfirmationWithOptional("Confirmation!", "Are you sure you want to activate this user?")
+                .get() == ButtonType.CANCEL) {
+            return;
+        }
+
         if (libarian == null) {
             AlertTools.showAlertError("Please select a libarian to deactivate", "Error");
 
@@ -190,7 +202,7 @@ public class LibarianController {
                     if (affectedRows > 0) {
                         connection.commit();
 
-                        AlertTools.showAlertConfirmationWithOptional("Libarian activated successfully",
+                        AlertTools.showAlertInformation("Libarian activated successfully",
                                 "Libarian activated successfully");
 
                         setTable();
@@ -245,20 +257,21 @@ public class LibarianController {
     void deleteOnAction(ActionEvent event) {
         Libarian libarian = table.getSelectionModel().getSelectedItem();
 
+        if (AlertTools
+                .showAlertConfirmationWithOptional("Confirmation!", "Are you sure you want to delete this user?")
+                .get() == ButtonType.CANCEL) {
+            return;
+        }
+
         if (libarian == null) {
             AlertTools.showAlertError("Please select a libarian to delete", "Error");
             return;
         }
 
-        if (AlertTools.showAlertConfirmationWithOptional("Are you sure you want to delete this libarian ? ", null)
-                .get() == ButtonType.OK) {
-
-            if (Libarian.deleteLibarian(libarian)) {
-                AlertTools.showAlertInformation("Libarian deleted successfully", "Success");
-            } else {
-                AlertTools.showAlertError("Error deleting libarian", "Error");
-            }
-
+        if (Libarian.deleteLibarian(libarian)) {
+            AlertTools.showAlertInformation("Libarian deleted successfully", "Success");
+        } else {
+            AlertTools.showAlertError("Error deleting libarian", "Error");
         }
 
         setTable();
