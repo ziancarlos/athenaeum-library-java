@@ -1,7 +1,6 @@
 package tools;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -122,7 +121,6 @@ public class Procedure {
             try {
                 connection.rollback();
             } catch (SQLException e1) {
-                // TODO Auto-generated catch block
                 AlertTools.showAlertError("Error!", e.getMessage());
             }
 
