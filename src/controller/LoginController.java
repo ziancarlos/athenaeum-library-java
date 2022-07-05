@@ -52,7 +52,7 @@ public class LoginController {
 
         CurrentUser.currentUser = user;
 
-        AlertTools.showAlertConfirmation("Sucessfull!", "You have succesfully login!");
+        AlertTools.showAlertInformation("Sucessfull!", "You have succesfully login!");
 
         SwitchSceneTools.changeSceneActionEvent(event, "../view/menu-page.fxml");
 

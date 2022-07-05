@@ -79,7 +79,7 @@ public class BookkeepingDetailController {
             if (resultSet.next()) {
                 lv.getItems().add("Penalty Id : " + resultSet.getInt("penalties.id"));
                 lv.getItems().add("Penalty Type : " + resultSet.getString("penalties.penalty_type"));
-                lv.getItems().add("Amount : " + resultSet.getDouble("penalties.amount"));
+                lv.getItems().add("Amount : $" + resultSet.getDouble("penalties.amount"));
                 lv.getItems().add("Penalty Date : " + resultSet.getString("penalties.penalty_date"));
                 lv.getItems().add("");
                 lv.getItems().add("Customer Id :  " + resultSet.getInt("users.id"));

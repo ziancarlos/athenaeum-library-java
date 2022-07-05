@@ -5,8 +5,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import javax.swing.Action;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -55,8 +58,6 @@ public class CustomerController {
         createdAtCol.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
 
         setTable();
-
-        System.out.println("halo");
     }
 
     private void setTable() {
@@ -108,6 +109,76 @@ public class CustomerController {
     @FXML
     void backBtn(ActionEvent event) {
         BackBtn.backBtnActionEvent(event);
+    }
+
+    public void deleteOnAction(ActionEvent event) {
+        Customer customer = table.getSelectionModel().getSelectedItem();
+
+        if (AlertTools
+                .showAlertConfirmationWithOptional("Confirmation!", "Are you sure you want to delete this customer?")
+                .get() == ButtonType.CANCEL) {
+            return;
+        }
+
+        if (customer == null) {
+            AlertTools.showAlertError("Error", "Please select a customer!");
+
+            setTable();
+
+            return;
+        }
+
+        Connection connection = null;
+        PreparedStatement statementSelect = null;
+        PreparedStatement statementDelete = null;
+        ResultSet resultSet = null;
+        int affectedRows;
+
+        try {
+            connection = DatabaseTools.getConnection();
+            statementSelect = connection.prepareStatement(
+                    "SELECT * FROM borrowed_books WHERE borrowing_customer_id = ?");
+            statementSelect.setInt(1, customer.getId());
+
+            resultSet = statementSelect.executeQuery();
+            if (!resultSet.next()) {
+                statementDelete = connection.prepareStatement(
+                        "DELETE FROM users WHERE id = ?");
+                statementDelete.setInt(1, customer.getId());
+
+                affectedRows = statementDelete.executeUpdate();
+                if (affectedRows > 0) {
+                    AlertTools.showAlertInformation("Success!", "This customers succesfully deleted!");
+
+                    setTable();
+                } else {
+                    AlertTools.showAlertError("Error!", "Please try again!");
+
+                    setTable();
+                }
+            } else {
+                AlertTools.showAlertError("Cant delete this customer!", "this customer has already make a borrowing!");
+
+                setTable();
+            }
+        } catch (Exception e) {
+            AlertTools.showAlertError("Error!", "Database error!");
+
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (statementDelete != null)
+                    statementDelete.close();
+                if (statementSelect != null)
+                    statementSelect.close();
+                if (resultSet != null)
+                    resultSet.close();
+            } catch (Exception e) {
+                AlertTools.showAlertError("Error!", "Database error!");
+            }
+        }
     }
 
     @FXML

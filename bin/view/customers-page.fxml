@@ -27,9 +27,10 @@
          </columns>
       </TableView>
       <Button layoutX="85.0" layoutY="65.0" mnemonicParsing="false" onAction="#editOnAction" prefHeight="25.0" prefWidth="58.0" text="Edit" />
-      <Button layoutX="150.0" layoutY="65.0" mnemonicParsing="false" onAction="#detailOnAction" prefHeight="25.0" prefWidth="58.0" text="Details" />
+      <Button layoutX="216.0" layoutY="65.0" mnemonicParsing="false" onAction="#detailOnAction" prefHeight="25.0" prefWidth="58.0" text="Details" />
       <TextField fx:id="searchTf" layoutX="371.0" layoutY="65.0" prefHeight="25.0" prefWidth="144.0" />
       <Button layoutX="522.0" layoutY="65.0" mnemonicParsing="false" onAction="#searchOnAction" prefHeight="25.0" prefWidth="58.0" text="Search" />
       <Button layoutX="522.0" layoutY="344.0" mnemonicParsing="false" onAction="#refreshOnAction" prefHeight="25.0" prefWidth="58.0" text="Refresh" />
+      <Button layoutX="150.0" layoutY="65.0" mnemonicParsing="false" onAction="#deleteOnAction" prefHeight="25.0" prefWidth="58.0" text="Delete" />
    </children>
 </AnchorPane>

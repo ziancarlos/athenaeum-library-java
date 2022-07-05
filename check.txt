@@ -1,0 +1,28 @@
+-login(success)
+-logout(success)
+-account(admin)(success)
+
+-libarian add (success)
+-libarian edit (success)
+-libarian delete (success)
+-libarian deactivate (success)
+-libarian activate (success)
+-libarian refresh (success)
+-libarian search (success)
+
+-category add (success)
+-category edit (success)
+-category delete (success)
+-category details (success)
+-category refresh (success)
+-search category (success)
+
+-customer add (success)
+-customer edit (success)
+-customer detail (success)
+-customer delete (success)
+-customer search (success)
+-customer refres  (success)
+
+-bookkeeping detail(not-success)(not really detail)
+-bookkeeping filter (success)

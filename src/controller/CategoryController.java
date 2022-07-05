@@ -105,24 +105,18 @@ public class CategoryController {
     void deleteOnAction(ActionEvent event) {
         Category category = table.getSelectionModel().getSelectedItem();
 
-        if (AlertTools
-                .showAlertConfirmationWithOptional("Confirmation!", "Are you sure you want to delete this categor?")
-                .get() == ButtonType.CANCEL) {
-            return;
-        }
-
         if (category == null) {
             AlertTools.showAlertError("No category selected!", "Select a category!");
             return;
         }
 
-        if (category.getConnectedBooks() > 0) {
-            AlertTools.showAlertError("Cannot delete category!", "Category is connected to books!");
+        if (AlertTools.showAlertConfirmationWithOptional("Are you sure to delete this category?", "Delete category?")
+                .get() == ButtonType.CANCEL) {
             return;
         }
 
-        if (AlertTools.showAlertConfirmationWithOptional("Are you sure to delete this category?", "Delete category?")
-                .get() == ButtonType.CANCEL) {
+        if (category.getConnectedBooks() > 0) {
+            AlertTools.showAlertError("Cannot delete category!", "Category is connected to books!");
             return;
         }
 

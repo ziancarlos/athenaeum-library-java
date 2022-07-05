@@ -17,21 +17,21 @@
       </Text>
       <Button layoutX="515.0" layoutY="22.0" mnemonicParsing="false" onAction="#backOnAction" prefHeight="32.0" prefWidth="64.0" text="Back" />
       <ListView fx:id="lv" layoutX="21.0" layoutY="70.0" prefHeight="265.0" prefWidth="260.0" />
-      <TableView fx:id="tableBorrowing" layoutX="290.0" layoutY="70.0" prefHeight="265.0" prefWidth="289.0">
+      <TableView fx:id="tableBorrowing" layoutX="290.0" layoutY="70.0" prefHeight="265.0" prefWidth="287.0">
          <columns>
             <TableColumn fx:id="bookColBorrowing" prefWidth="102.0" text="Book Name" />
             <TableColumn fx:id="dueDateColBorrowing" prefWidth="87.0" text="Due Date" />
             <TableColumn minWidth="0.0" prefWidth="0.0" text="Due Date" />
             <TableColumn fx:id="statusColBorrowing" prefWidth="78.0" text="Status" />
-            <TableColumn fx:id="amountColBorrowing" minWidth="0.0" prefWidth="70.0" text="Price" />
+            <TableColumn fx:id="amountColBorrowing" minWidth="0.0" prefWidth="70.0" text="Price($)" />
          </columns>
       </TableView>
-      <TableView fx:id="tablePurchasing" layoutX="290.0" layoutY="70.0" prefHeight="265.0" prefWidth="289.0">
+      <TableView fx:id="tablePurchasing" layoutX="290.0" layoutY="70.0" prefHeight="265.0" prefWidth="287.0">
          <columns>
             <TableColumn fx:id="idColPurchasing" prefWidth="97.0" text="Book Id" />
             <TableColumn fx:id="nameColPurchasing" prefWidth="118.0" text="Book Name" />
             <TableColumn fx:id="categoryColPurchasing" prefWidth="71.0" text="Category" />
-            <TableColumn fx:id="amountColPurchasing" prefWidth="75.0" text="Price" />
+            <TableColumn fx:id="amountColPurchasing" prefWidth="75.0" text="Price($)" />
          </columns>
       </TableView>
    </children>

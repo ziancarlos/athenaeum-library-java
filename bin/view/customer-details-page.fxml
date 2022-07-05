@@ -16,14 +16,15 @@
          </font>
       </Text>
       <Button layoutX="515.0" layoutY="22.0" mnemonicParsing="false" onAction="#backOnAction" prefHeight="32.0" prefWidth="64.0" text="Back" />
-      <TableView fx:id="table" layoutX="270.0" layoutY="72.0" prefHeight="265.0" prefWidth="310.0">
+      <ListView fx:id="listView" layoutX="21.0" layoutY="72.0" prefHeight="265.0" prefWidth="228.0" />
+      <TableView fx:id="table" layoutX="258.0" layoutY="72.0" prefHeight="265.0" prefWidth="322.0">
          <columns>
-            <TableColumn fx:id="idCol" prefWidth="39.0" text="ID" />
-            <TableColumn fx:id="bookNameCol" prefWidth="120.0" text="Book Name" />
-            <TableColumn fx:id="dueDateCol" text="Due Date" />
-            <TableColumn fx:id="statusCol" prefWidth="70.0" text="Status" />
+            <TableColumn fx:id="bookNameCol" prefWidth="132.0" text="Book Name" />
+            <TableColumn fx:id="startDateCol" prefWidth="134.0" text="Start Date" />
+            <TableColumn fx:id="endDateCol" prefWidth="158.0" text="End Date" />
+            <TableColumn fx:id="statusCol" prefWidth="119.0" text="Status" />
+            <TableColumn fx:id="priceCol" prefWidth="141.0" text="Price($)" />
          </columns>
       </TableView>
-      <ListView fx:id="listView" layoutX="21.0" layoutY="72.0" prefHeight="265.0" prefWidth="228.0" />
    </children>
 </AnchorPane>

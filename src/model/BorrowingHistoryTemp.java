@@ -6,21 +6,31 @@ public class BorrowingHistoryTemp {
     private String startDate;
     private String endDate;
     private String status;
+    private double price;
 
-    public BorrowingHistoryTemp(int id, Book book, String endDate, String startDate, String status) {
+    public BorrowingHistoryTemp(int id, Book book, String endDate, String startDate, String status, double price) {
         this.id = id;
         this.book = book;
         this.endDate = endDate;
         this.startDate = startDate;
         this.status = status;
+        this.price = price;
     }
 
-    public int getId() {
+    public double getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public Book getBook() {

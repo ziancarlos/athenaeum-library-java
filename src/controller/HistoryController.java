@@ -9,8 +9,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import model.HistoryBorrowingTemp;
 import model.Book;
+import model.BorrowingHistoryTemp;
 import tools.AlertTools;
 import tools.BackBtn;
 import tools.CurrentUser;
@@ -31,7 +31,10 @@ public class HistoryController {
     private TableColumn<?, ?> statusCol;
 
     @FXML
-    private TableView<HistoryBorrowingTemp> table;
+    private TableColumn<?, ?> priceCol;
+
+    @FXML
+    private TableView<BorrowingHistoryTemp> table;
 
     public void initialize() {
         bookNameCol.setCellValueFactory(new PropertyValueFactory<>("book"));
@@ -39,6 +42,7 @@ public class HistoryController {
         startDateCol.setCellValueFactory(new PropertyValueFactory<>("startDate"));
         endDateCol.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+        priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
 
         Connection connection = null;
         PreparedStatement statement = null;
@@ -53,12 +57,12 @@ public class HistoryController {
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 table.getItems().add(
-                        new HistoryBorrowingTemp(resultSet.getInt("borrowed_books.borrowing_id"),
+                        new BorrowingHistoryTemp(resultSet.getInt("borrowed_books.borrowing_id"),
                                 new Book(resultSet.getInt("books.id"), resultSet.getString("books.name")),
                                 resultSet.getString("borrowed_books.end_date"),
                                 resultSet.getString("bookkeepings.payment_date"),
-                                resultSet.getString("borrowed_books.status")));
-
+                                resultSet.getString("borrowed_books.status"),
+                                resultSet.getInt("borrowed_books.price")));
             }
         } catch (Exception e) {
             AlertTools.showAlertError("Error!", e.getMessage());
