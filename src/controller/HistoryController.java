@@ -9,7 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import model.BorrowingHistoryTemp;
+import model.HistoryBorrowingTemp;
 import model.Book;
 import tools.AlertTools;
 import tools.BackBtn;
@@ -31,7 +31,7 @@ public class HistoryController {
     private TableColumn<?, ?> statusCol;
 
     @FXML
-    private TableView<BorrowingHistoryTemp> table;
+    private TableView<HistoryBorrowingTemp> table;
 
     public void initialize() {
         bookNameCol.setCellValueFactory(new PropertyValueFactory<>("book"));
@@ -53,7 +53,7 @@ public class HistoryController {
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 table.getItems().add(
-                        new BorrowingHistoryTemp(resultSet.getInt("borrowed_books.borrowing_id"),
+                        new HistoryBorrowingTemp(resultSet.getInt("borrowed_books.borrowing_id"),
                                 new Book(resultSet.getInt("books.id"), resultSet.getString("books.name")),
                                 resultSet.getString("borrowed_books.end_date"),
                                 resultSet.getString("bookkeepings.payment_date"),
