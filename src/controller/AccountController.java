@@ -50,6 +50,7 @@ public class AccountController {
             lv.getItems().add("Role : " + admin.getRole());
 
             table.setVisible(false);
+
         } else if (CurrentUser.currentUser.getRole().equals("libarian")) {
             Libarian libarian = (Libarian) CurrentUser.currentUser;
             lv.getItems().add("Id : " + libarian.getId());
@@ -58,6 +59,7 @@ public class AccountController {
             lv.getItems().add("Active : " + libarian.getActive());
 
             table.setVisible(false);
+
         } else if (CurrentUser.currentUser.getRole().equals("customer")) {
             Customer customer = (Customer) CurrentUser.currentUser;
             lv.getItems().add("Id : " + customer.getId());

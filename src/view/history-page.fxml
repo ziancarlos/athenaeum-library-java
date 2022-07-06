@@ -15,7 +15,7 @@
             <Font name="Calibri Bold" size="32.0" />
          </font>
       </Text>
-      <TableView fx:id="table" layoutX="22.0" layoutY="76.0" prefHeight="248.0" prefWidth="555.0">
+      <TableView fx:id="table" layoutX="22.0" layoutY="76.0" prefHeight="288.0" prefWidth="555.0">
         <columns>
           <TableColumn fx:id="bookNameCol" prefWidth="132.0" text="Book Name" />
           <TableColumn fx:id="startDateCol" prefWidth="134.0" text="Start Date" />
