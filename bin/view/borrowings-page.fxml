@@ -31,6 +31,7 @@
       </TableView>
       <TextField fx:id="searchTf" layoutX="182.0" layoutY="66.0" prefHeight="25.0" prefWidth="144.0" />
       <ComboBox fx:id="statusCb" layoutX="21.0" layoutY="66.0" prefWidth="150.0" />
-      <Button layoutX="300.0" layoutY="331.0" mnemonicParsing="false" onAction="#refreshOnAction" prefHeight="26.0" prefWidth="126.0" text="Refresh" />
+      <Button layoutX="443.0" layoutY="331.0" mnemonicParsing="false" onAction="#refreshOnAction" prefHeight="26.0" prefWidth="126.0" text="Refresh" />
+      <Button layoutX="296.0" layoutY="331.0" mnemonicParsing="false" onAction="#deleteOnAction" prefHeight="26.0" prefWidth="126.0" text="Delete Borrowing" />
    </children>
 </AnchorPane>

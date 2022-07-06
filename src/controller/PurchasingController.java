@@ -9,6 +9,7 @@ import java.sql.Statement;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -154,12 +155,144 @@ public class PurchasingController {
     }
 
     @FXML
+    void purchasingDeleteOnAction(ActionEvent event) {
+        PurchasingDetail purchasingDetail = table.getSelectionModel().getSelectedItem();
+
+        if (purchasingDetail == null) {
+            AlertTools.showAlertError("Please select a purchasing!", "Select a purchasing!");
+            setTable();
+
+            return;
+        }
+
+        if (AlertTools.showAlertConfirmationWithOptional("Are you sure?", "you want to delete this purchasing?")
+                .get() == ButtonType.CANCEL) {
+
+            setTable();
+
+            return;
+        }
+
+        Connection connection = null;
+        PreparedStatement statementCheck = null;
+        PreparedStatement statementDelete = null;
+        PreparedStatement statementSelect = null;
+        ResultSet resultSet = null;
+        int affectedRows;
+
+        try {
+            connection = DatabaseTools.getConnection();
+            connection.setAutoCommit(false);
+
+            statementCheck = connection.prepareStatement(
+                    "SELECT * FROM purchasings INNER JOIN purchasings_books_details ON purchasings.id = purchasings_books_details.purchasing_id INNER JOIN borrowed_books ON purchasings_books_details.book_id = borrowed_books.book_id WHERE purchasings.id = ?");
+            statementCheck.setInt(1, purchasingDetail.getId());
+            resultSet = statementCheck.executeQuery();
+            if (!resultSet.next()) {
+                statementSelect = connection.prepareStatement(
+                        "SELECT book_id FROM purchasings_books_details WHERE purchasing_id = ?");
+                statementSelect.setInt(1, purchasingDetail.getId());
+                resultSet = statementSelect.executeQuery();
+
+                statementDelete = connection.prepareStatement(
+                        "DELETE FROM purchasings_books_details WHERE purchasing_id = ?");
+                statementDelete.setInt(1, purchasingDetail.getId());
+
+                affectedRows = statementDelete.executeUpdate();
+                if (affectedRows > 0) {
+                    while (resultSet.next()) {
+                        statementDelete = connection.prepareStatement(
+                                "DELETE FROM books WHERE id = ?");
+                        statementDelete.setInt(1, resultSet.getInt("book_id"));
+
+                        affectedRows = statementDelete.executeUpdate();
+
+                        if (affectedRows == 0) {
+                            connection.rollback();
+
+                            setTable();
+
+                            AlertTools.showAlertError("Error!", "Please try again!");
+                        }
+                    }
+
+                    statementDelete = connection.prepareStatement(
+                            "DELETE FROM bookkeepings WHERE purchasing_id = ?");
+                    statementDelete.setInt(1, purchasingDetail.getId());
+
+                    affectedRows = statementDelete.executeUpdate();
+
+                    if (affectedRows > 0) {
+
+                        statementDelete = connection.prepareStatement(
+                                "DELETE FROM purchasings WHERE id = ?");
+                        statementDelete.setInt(1, purchasingDetail.getId());
+
+                        affectedRows = statementDelete.executeUpdate();
+                        if (affectedRows > 0) {
+                            connection.commit();
+
+                            setTable();
+
+                            AlertTools.showAlertInformation("Success!", "Succeed delete this purchasing!");
+                        } else {
+                            connection.rollback();
+
+                            setTable();
+
+                            AlertTools.showAlertError("Error!", "Please try again!");
+                        }
+
+                    } else {
+                        connection.rollback();
+
+                        setTable();
+
+                        AlertTools.showAlertError("Error!", "Please try again!");
+                    }
+                } else {
+                    connection.rollback();
+
+                    setTable();
+
+                    AlertTools.showAlertError("Error!", "Please try again!");
+                }
+            } else {
+                connection.rollback();
+
+                setTable();
+
+                AlertTools.showAlertError("Error!", "This Purchased Books is already borrowed by other user!");
+            }
+        } catch (Exception e) {
+            AlertTools.showAlertError("Error!", e.getMessage());
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (statementCheck != null)
+                    statementCheck.close();
+                if (statementDelete != null)
+                    statementDelete.close();
+                if (statementSelect != null)
+                    statementSelect.close();
+                if (resultSet != null)
+                    resultSet.close();
+            } catch (Exception e) {
+                AlertTools.showAlertError("Error!", e.getMessage());
+            }
+        }
+    }
+
+    @FXML
     void searchOnAction(ActionEvent event) {
         if ((startDatePicker.getValue() == null || endDatePicker.getValue() == null)
                 && ValidationTools.isTextFieldEmptyOrNull(searchTf)) {
             AlertTools.showAlertError("Date picker and search text field is empty!", "Please fill in all fields");
 
             setSearchFormEmpty();
+
+            setTable();
 
             return;
         }

@@ -481,6 +481,34 @@ public class BorrowingManageController {
         lv.getItems().addAll("Borrowed Books : " + borrowing.getBorrowedBooks());
         lv.getItems().addAll("Borrowing Start Date : " + borrowing.getBorrowingDate());
         lv.getItems().add("Borrowing Status : " + borrowing.getBorrowingStatus());
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = DatabaseTools.getConnection();
+            statement = connection.prepareStatement(
+                    "SELECT bookkeepings.amount FROM bookkeepings WHERE borrowing_id = ?");
+            statement.setInt(1, borrowing.getId());
+
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                lv.getItems().add("Amount : $" + resultSet.getDouble("bookkeepings.amount"));
+            }
+        } catch (Exception e) {
+            AlertTools.showAlertConfirmation("Error!", e.getMessage());
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (statement != null)
+                    statement.close();
+                if (resultSet != null)
+                    resultSet.close();
+            } catch (Exception e) {
+                AlertTools.showAlertConfirmation("Error!", e.getMessage());
+            }
+        }
     }
 
 }

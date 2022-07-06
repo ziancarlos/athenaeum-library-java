@@ -5,12 +5,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import com.mysql.cj.xdevapi.Statement;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.PieChart.Data;
 import javafx.scene.Node;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -65,7 +69,7 @@ public class BorrowingController {
     }
 
     private void setStatusCb() {
-        statusCb.getItems().addAll("All", "On-going", "Returned", "Completed");
+        statusCb.getItems().addAll("All", "On-going", "Completed");
         statusCb.setValue("All");
     }
 
@@ -150,6 +154,168 @@ public class BorrowingController {
         }
 
         BackBtn.addToBackBtnStack("../view/borrowings-page.fxml");
+    }
+
+    @FXML
+    void deleteOnAction(ActionEvent event) {
+        Borrowing borrowing = table.getSelectionModel().getSelectedItem();
+
+        if (borrowing == null) {
+            AlertTools.showAlertError("No borrowing is being selected!", "Please select a borrowing to manage!");
+
+            return;
+        }
+
+        if (AlertTools.showAlertConfirmationWithOptional("Confirmation!",
+                "Make sure all this borrowings books, is already with you!").get() == ButtonType.CANCEL) {
+            return;
+        }
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        PreparedStatement statementUpdate = null;
+        ResultSet resultSet = null;
+        int affectedRows;
+
+        try {
+            connection = DatabaseTools.getConnection();
+            connection.setAutoCommit(false);
+
+            statement = connection.prepareStatement(
+                    "SELECT IF( TIMEDIFF(NOW(), ?) < '00:05:00', 'not-late',  'late'  ) AS lateCheck;");
+
+            statement.setString(1, borrowing.getBorrowingDate());
+
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                if (resultSet.getString("lateCheck").equals("not-late")) {
+
+                    statement = connection.prepareStatement(
+                            "SELECT IF(SUM( IF(borrowed_books.status != 'on-going', 1, 0) ) = 0, 'valid', 'invalid') AS validCheck FROM borrowed_books WHERE borrowing_id = ?");
+                    statement.setInt(1, borrowing.getId());
+                    resultSet = statement.executeQuery();
+                    if (resultSet.next()) {
+                        if (resultSet.getString("validCheck").equals("valid")) {
+                            statement = connection.prepareStatement(
+                                    "SELECT * FROM borrowed_books INNER JOIN books ON borrowed_books.book_id = books.id WHERE borrowed_books.borrowing_id = ?");
+                            statement.setInt(1, borrowing.getId());
+
+                            resultSet = statement.executeQuery();
+                            while (resultSet.next()) {
+                                statementUpdate = connection.prepareStatement(
+                                        "UPDATE books SET availability = 'available' WHERE id = ?");
+                                statementUpdate.setInt(1, resultSet.getInt("books.id"));
+                                statementUpdate.executeUpdate();
+                            }
+
+                            statementUpdate = connection.prepareStatement(
+                                    "DELETE FROM borrowed_books WHERE borrowing_id = ?");
+                            statementUpdate.setInt(1, borrowing.getId());
+
+                            affectedRows = statementUpdate.executeUpdate();
+                            if (affectedRows > 0) {
+
+                                statementUpdate = connection
+                                        .prepareStatement("DELETE FROM bookkeepings WHERE borrowing_id = ?");
+                                statementUpdate.setInt(1, borrowing.getId());
+
+                                affectedRows = statementUpdate.executeUpdate();
+                                if (affectedRows > 0) {
+                                    statementUpdate = connection
+                                            .prepareStatement("DELETE FROM borrowings WHERE id = ?");
+                                    statementUpdate.setInt(1, borrowing.getId());
+
+                                    affectedRows = statementUpdate.executeUpdate();
+                                    if (affectedRows > 0) {
+                                        connection.commit();
+
+                                        setTable();
+
+                                        AlertTools.showAlertInformation("Succeed!", "Success Delete this borrowings!");
+                                    } else {
+                                        connection.rollback();
+
+                                        setTable();
+
+                                        AlertTools.showAlertError("Error!", "Try Again!");
+
+                                    }
+                                } else {
+                                    connection.rollback();
+
+                                    setTable();
+
+                                    AlertTools.showAlertError("Error!", "Try Again!");
+                                }
+
+                            } else {
+                                connection.rollback();
+
+                                setTable();
+
+                                AlertTools.showAlertError("Error!", "Try Again!");
+                            }
+
+                        } else {
+                            connection.rollback();
+
+                            setTable();
+
+                            AlertTools.showAlertError("Error!",
+                                    "This borrowings books some/all has been claimed!");
+
+                        }
+
+                    } else {
+                        connection.rollback();
+
+                        setTable();
+
+                        AlertTools.showAlertError("Error!",
+                                "Try again!");
+                    }
+                } else {
+
+                    setTable();
+
+                    AlertTools.showAlertError("Error!",
+                            "This borrowings is already longer than 5 minute, cant be return!");
+
+                }
+            } else {
+                connection.rollback();
+
+                setTable();
+
+                AlertTools.showAlertError("Error!",
+                        "This borrowings is already longer than 5 minute, cant be return!");
+            }
+
+        } catch (Exception e) {
+            AlertTools.showAlertInformation("Error!", e.getMessage());
+
+            e.printStackTrace();
+
+            try {
+                connection.rollback();
+            } catch (Exception e1) {
+                AlertTools.showAlertInformation("Error!", e1.getMessage());
+            }
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (statement != null)
+                    statement.close();
+                if (statementUpdate != null)
+                    statementUpdate.close();
+                if (resultSet != null)
+                    resultSet.close();
+            } catch (Exception e) {
+                AlertTools.showAlertInformation("Error!", e.getMessage());
+
+            }
+        }
     }
 
     @FXML

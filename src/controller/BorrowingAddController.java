@@ -11,6 +11,7 @@ import java.util.Calendar;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -114,8 +115,6 @@ public class BorrowingAddController {
 
             dueDate = dateAfter;
 
-            System.out.println(dueDate);
-
         } catch (Exception e) {
             AlertTools.showAlertError("Error", e.getMessage());
 
@@ -190,6 +189,13 @@ public class BorrowingAddController {
             return;
         }
 
+        if (AlertTools.showAlertConfirmationWithOptional("Are you sure ?",
+                "You want to borrow this books to " + customerCb.getSelectionModel().getSelectedItem().getUsername())
+                .get() == ButtonType.CANCEL) {
+
+            return;
+        }
+
         Connection connection = null;
         PreparedStatement statementCheckBooksAvail = null;
         PreparedStatement statementCheckCustomerBorrowings = null;
@@ -245,97 +251,108 @@ public class BorrowingAddController {
 
             if (booksAvail) {
                 statementCheckBlacklisted = connection.prepareStatement(
-                        "SELECT users.id, users.username, users.password, users.role, users.phone_number, users.created_at, IF(count(penalties.payment_status = 'unpaid') > 0, 'blacklisted', 'not-blacklisted') AS blacklisted FROM users  LEFT JOIN  penalties ON penalties.borrowed_book_borrowing_customer_id = users.id GROUP BY users.id HAVING users.role = 'customer' AND blacklisted = 'not-blacklisted' AND users.id = ?");
+                        "SELECT users.id, users.username, users.password, users.role, users.phone_number, users.created_at,  IF(SUM(IF(penalties.payment_status = 'unpaid', 1, 0)) = 0, 'not-blacklisted', 'blacklisted' ) AS blacklisted FROM users  LEFT JOIN  penalties ON penalties.borrowed_book_borrowing_customer_id = users.id GROUP BY users.id HAVING users.role = 'customer' AND blacklisted = 'not-blacklisted' AND users.id = ?");
                 statementCheckBlacklisted.setInt(1, customerCb.getSelectionModel().getSelectedItem().getId());
 
                 resultSet = statementCheckBlacklisted.executeQuery();
                 if (resultSet.next()) {
-                    statementCheckCustomerBorrowings = connection.prepareStatement(
-                            "SELECT * FROM borrowings WHERE customer_id = ? AND status = 'on-going'");
-                    statementCheckCustomerBorrowings.setInt(1,
-                            customerCb.getSelectionModel().getSelectedItem().getId());
+                    if (resultSet.getString("blacklisted").equals("not-blacklisted")) {
 
-                    resultSet = statementCheckCustomerBorrowings.executeQuery();
-                    if (!resultSet.next()) {
-                        statementBorrowings = connection
-                                .prepareStatement("INSERT INTO borrowings(customer_id) VALUES(?) ",
-                                        PreparedStatement.RETURN_GENERATED_KEYS);
-                        statementBorrowings.setInt(1, customerCb.getSelectionModel().getSelectedItem().getId());
+                        statementCheckCustomerBorrowings = connection.prepareStatement(
+                                "SELECT * FROM borrowings WHERE customer_id = ? AND status = 'on-going'");
+                        statementCheckCustomerBorrowings.setInt(1,
+                                customerCb.getSelectionModel().getSelectedItem().getId());
 
-                        affectedRows = statementBorrowings.executeUpdate();
-                        if (affectedRows > 0) {
-                            resultSet = statementBorrowings.getGeneratedKeys();
-                            resultSet.next();
+                        resultSet = statementCheckCustomerBorrowings.executeQuery();
+                        if (!resultSet.next()) {
+                            statementBorrowings = connection
+                                    .prepareStatement("INSERT INTO borrowings(customer_id) VALUES(?) ",
+                                            PreparedStatement.RETURN_GENERATED_KEYS);
+                            statementBorrowings.setInt(1, customerCb.getSelectionModel().getSelectedItem().getId());
 
-                            int borrowingId = resultSet.getInt(1);
-
-                            statementInsertBookkeepings = connection.prepareStatement(
-                                    "INSERT INTO borrowings_bookkeepings(double_entry_type, transaction_type, amount, payment_date, borrowing_id) VALUES('debit', 'borrowing', ?, NOW(), ?)");
-                            statementInsertBookkeepings.setDouble(1, total);
-                            statementInsertBookkeepings.setInt(2, borrowingId);
-
-                            affectedRows = statementInsertBookkeepings.executeUpdate();
+                            affectedRows = statementBorrowings.executeUpdate();
                             if (affectedRows > 0) {
-                                for (BookAddTemp bookAddTemp : bookAddTemps) {
-                                    statementInsertBorrowedBooks = connection.prepareStatement(
-                                            "INSERT INTO borrowed_books (borrowing_id, borrowing_customer_id, book_id, price, status, end_date) VALUES(?, ?, ?, ?, ?, ?);");
-                                    statementInsertBorrowedBooks.setInt(1, borrowingId);
-                                    statementInsertBorrowedBooks.setInt(2,
-                                            customerCb.getSelectionModel().getSelectedItem().getId());
-                                    statementInsertBorrowedBooks.setInt(3, bookAddTemp.getBook().getId());
-                                    statementInsertBorrowedBooks.setDouble(4, bookAddTemp.getAmount());
-                                    statementInsertBorrowedBooks.setString(5, "on-going");
-                                    statementInsertBorrowedBooks.setString(6, bookAddTemp.getDueDate());
+                                resultSet = statementBorrowings.getGeneratedKeys();
+                                resultSet.next();
 
-                                    statementInsertBorrowedBooks.executeUpdate();
+                                int borrowingId = resultSet.getInt(1);
+
+                                statementInsertBookkeepings = connection.prepareStatement(
+                                        "INSERT INTO borrowings_bookkeepings(double_entry_type, transaction_type, amount, payment_date, borrowing_id) VALUES('debit', 'borrowing', ?, NOW(), ?)");
+                                statementInsertBookkeepings.setDouble(1, total);
+                                statementInsertBookkeepings.setInt(2, borrowingId);
+
+                                affectedRows = statementInsertBookkeepings.executeUpdate();
+                                if (affectedRows > 0) {
+                                    for (BookAddTemp bookAddTemp : bookAddTemps) {
+                                        statementInsertBorrowedBooks = connection.prepareStatement(
+                                                "INSERT INTO borrowed_books (borrowing_id, borrowing_customer_id, book_id, price, status, end_date) VALUES(?, ?, ?, ?, ?, ?);");
+                                        statementInsertBorrowedBooks.setInt(1, borrowingId);
+                                        statementInsertBorrowedBooks.setInt(2,
+                                                customerCb.getSelectionModel().getSelectedItem().getId());
+                                        statementInsertBorrowedBooks.setInt(3, bookAddTemp.getBook().getId());
+                                        statementInsertBorrowedBooks.setDouble(4, bookAddTemp.getAmount());
+                                        statementInsertBorrowedBooks.setString(5, "on-going");
+                                        statementInsertBorrowedBooks.setString(6, bookAddTemp.getDueDate());
+
+                                        statementInsertBorrowedBooks.executeUpdate();
+                                    }
+
+                                    for (BookAddTemp bookAddTemp : bookAddTemps) {
+                                        statementUpdateBook = connection
+                                                .prepareStatement(
+                                                        "UPDATE books SET availability = 'unavailable' WHERE id = ?");
+                                        statementUpdateBook.setInt(1, bookAddTemp.getBook().getId());
+                                        statementUpdateBook.executeUpdate();
+                                    }
+
+                                    connection.commit();
+
+                                    BackBtn.backBtnActionEvent(event);
+
+                                } else {
+                                    connection.rollback();
+
+                                    allDefault();
+
+                                    AlertTools.showAlertError("Insert bookkeepings failed!",
+                                            "Try again/Contact support!");
                                 }
-
-                                for (BookAddTemp bookAddTemp : bookAddTemps) {
-                                    statementUpdateBook = connection
-                                            .prepareStatement(
-                                                    "UPDATE books SET availability = 'unavailable' WHERE id = ?");
-                                    statementUpdateBook.setInt(1, bookAddTemp.getBook().getId());
-                                    statementUpdateBook.executeUpdate();
-                                }
-
-                                connection.commit();
-
-                                BackBtn.backBtnActionEvent(event);
-
                             } else {
                                 connection.rollback();
 
                                 allDefault();
 
-                                AlertTools.showAlertError("Insert bookkeepings failed!",
-                                        "Try again/Contact support!");
+                                AlertTools.showAlertError("Insert borrowings failed!",
+                                        "Try again!");
                             }
+
                         } else {
                             connection.rollback();
 
                             allDefault();
 
-                            AlertTools.showAlertError("Insert borrowings failed!",
-                                    "Try again!");
-                        }
+                            AlertTools.showAlertError("Customer you selected has a on-going borrowing transaction!",
+                                    "Please try again!");
 
+                        }
                     } else {
                         connection.rollback();
 
                         allDefault();
 
-                        AlertTools.showAlertError("Customer you selected has a on-going borrowing transaction!",
+                        AlertTools.showAlertError("Customer you selected is blacklisted!",
                                 "Please try again!");
 
                     }
+
                 } else {
                     connection.rollback();
 
                     allDefault();
 
-                    AlertTools.showAlertError("Customer you selected is blacklisted!",
+                    AlertTools.showAlertError("Error!",
                             "Please try again!");
-
                 }
 
             } else {

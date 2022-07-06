@@ -21,7 +21,7 @@
             <TableColumn fx:id="idCol" prefWidth="38.0" text="ID" />
             <TableColumn fx:id="customerCol" prefWidth="190.0" text="Customer" />
             <TableColumn fx:id="typeCol" prefWidth="133.0" text="Penalty Type" />
-            <TableColumn fx:id="amountCol" prefWidth="112.0" text="Amount" />
+            <TableColumn fx:id="amountCol" prefWidth="112.0" text="Amount($)" />
             <TableColumn fx:id="statusCol" prefWidth="112.0" text="Status" />
          </columns>
       </TableView>

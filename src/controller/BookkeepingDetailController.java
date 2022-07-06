@@ -127,7 +127,7 @@ public class BookkeepingDetailController {
         try {
             connection = DatabaseTools.getConnection();
             statement = connection.prepareStatement(
-                    "SELECT * FROM borrowed_books INNER JOIN borrowings ON borrowed_books.borrowing_id = borrowings.id INNER JOIN users ON borrowed_books.borrowing_customer_id = users.id WHERE borrowed_books.borrowing_id = ? ");
+                    "SELECT * FROM borrowed_books INNER JOIN borrowings ON borrowed_books.borrowing_id = borrowings.id INNER JOIN users ON borrowed_books.borrowing_customer_id = users.id INNER JOIN bookkeepings ON borrowed_books.borrowing_id = bookkeepings.borrowing_id WHERE borrowed_books.borrowing_id = ? ");
             statement.setInt(1, bookkeepingBorrowing.getBorrowingId());
 
             resultSet = statement.executeQuery();
@@ -137,6 +137,10 @@ public class BookkeepingDetailController {
                 lv.getItems().add("Customer Phone Number : " + resultSet.getString("users.phone_number"));
                 lv.getItems().add(" ");
                 lv.getItems().add("Borrowings Status : " + resultSet.getString("borrowings.status"));
+                lv.getItems().add("Borrowings Status : " + resultSet.getString("borrowings.status"));
+                lv.getItems().add(" ");
+                lv.getItems().add("Borrowing Amount : $" + resultSet.getString("bookkeepings.amount"));
+                lv.getItems().add("Borrowing Date : " + resultSet.getString("bookkeepings.payment_date"));
             }
         } catch (Exception e) {
             AlertTools.showAlertError("Error!", e.getMessage());
@@ -207,13 +211,16 @@ public class BookkeepingDetailController {
         try {
             connection = DatabaseTools.getConnection();
             preparedStatement = connection.prepareStatement(
-                    "SELECT * FROM purchasings WHERE id = ?");
+                    "SELECT * FROM purchasings INNER JOIN bookkeepings ON purchasings.id = bookkeepings.purchasing_id  WHERE purchasings.id = ?");
             preparedStatement.setInt(1, bookkeepingPurchasing.getPurchasingId());
 
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 lv.getItems().add("Purchasing Id : " + resultSet.getString("purchasings.id"));
                 lv.getItems().add("Purchasing Supplier Name : " + resultSet.getString("purchasings.supplier_name"));
+
+                lv.getItems().add("Purchasing Amount : $" + resultSet.getString("bookkeepings.amount"));
+                lv.getItems().add("Purchasing Date : " + resultSet.getString("bookkeepings.payment_date"));
             }
         } catch (Exception e) {
             AlertTools.showAlertError("Database connectivity problem!", "Contact support!");

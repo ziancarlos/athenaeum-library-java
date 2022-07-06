@@ -39,7 +39,7 @@
          <columns>
             <TableColumn fx:id="bookNameCol" prefWidth="135.0" text="Book Name" />
             <TableColumn fx:id="categoryCol" minWidth="0.0" prefWidth="125.0" text="Category" />
-            <TableColumn fx:id="amountCol" prefWidth="161.0" text="Price" />
+            <TableColumn fx:id="amountCol" prefWidth="161.0" text="Price($)" />
          </columns>
       </TableView>
       <Text fx:id="totalAmountText" layoutX="362.0" layoutY="304.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Total :" wrappingWidth="207.40625">

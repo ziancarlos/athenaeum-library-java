@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -101,6 +102,14 @@ public class PurchasingAddController {
             return;
         }
 
+        if (AlertTools
+                .showAlertConfirmationWithOptional("Are you sure?", "you want to add this books in this purchasings?")
+                .get() == ButtonType.CANCEL) {
+            setAddFormDefault();
+
+            return;
+        }
+
         purchasingAddTempList
                 .add(new PurchasingAddTemp(bookNameTf.getText(), categoryCb.getSelectionModel().getSelectedItem(),
                         Double.parseDouble(priceTf.getText())));
@@ -111,7 +120,7 @@ public class PurchasingAddController {
 
         setTotalAmount();
 
-        AlertTools.showAlertConfirmation("Book added!", "Book added successfully");
+        AlertTools.showAlertInformation("Book added!", "Book added successfully");
     }
 
     @FXML
@@ -148,14 +157,33 @@ public class PurchasingAddController {
 
         if (ValidationTools.isTextFieldEmptyOrNull(supplierNameTf)) {
             AlertTools.showAlertError("Text field is empty!", "Please fill in all fields");
+            setTotalAmount();
 
-            setAllFormDefault();
+            setTable();
 
             return;
         }
 
         if (!ValidationTools.isTextIsValid(3, 46, supplierNameTf.getText())) {
             AlertTools.showAlertError("Text is invalid!", "Please check your text");
+
+            purchasingAddTempList.clear();
+
+            setTotalAmount();
+
+            setTable();
+
+            return;
+        }
+
+        if (AlertTools
+                .showAlertConfirmationWithOptional("Are you sure?", "you want to purchase this books?")
+                .get() == ButtonType.CANCEL) {
+            purchasingAddTempList.clear();
+
+            setTotalAmount();
+
+            setTable();
 
             setAllFormDefault();
 
@@ -239,7 +267,7 @@ public class PurchasingAddController {
 
                         connection.commit();
 
-                        AlertTools.showAlertConfirmation("Purchasing is done!", "Purchasing is done");
+                        AlertTools.showAlertInformation("Purchasing is done!", "Purchasing is done");
 
                         purchasingAddTempList.clear();
 
@@ -347,6 +375,6 @@ public class PurchasingAddController {
             totalAmount += purchasingAddTemp.getPrice();
         }
 
-        totalAmountText.setText(String.valueOf(totalAmount));
+        totalAmountText.setText("$ " + String.valueOf(totalAmount));
     }
 }

@@ -66,7 +66,7 @@ public class PurchasingDetailController {
         lv.getItems().add("Id : " + purchasingDetail.getId());
         lv.getItems().add("Supplier Name : " + purchasingDetail.getSupplierName());
         lv.getItems().add("Purchasing Date : " + purchasingDetail.getPurchasingDate());
-        lv.getItems().add("Total Amount : " + purchasingDetail.getTotalAmount());
+        lv.getItems().add("Total Amount : $" + purchasingDetail.getTotalAmount());
         lv.getItems().add("Total Books : " + purchasingDetail.getTotalBooks());
     }
 

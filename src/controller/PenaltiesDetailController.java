@@ -39,7 +39,7 @@ public class PenaltiesDetailController {
                 lv.getItems().add("Penalty Date : " + resultSet.getString("penalties.penalty_date"));
                 lv.getItems().add("Penalty Type : " + resultSet.getString("penalties.penalty_type"));
                 lv.getItems().add("Penalty Payment Status : " + resultSet.getString("penalties.payment_status"));
-                lv.getItems().add("Penalty Amount : " + resultSet.getDouble("penalties.amount"));
+                lv.getItems().add("Penalty Amount : $" + resultSet.getDouble("penalties.amount"));
                 lv.getItems().add(" ");
                 lv.getItems().add("Customer Username : " + resultSet.getString("users.username"));
                 lv.getItems().add("Customer Phone Number : " + resultSet.getString("users.phone_number"));

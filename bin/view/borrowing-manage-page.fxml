@@ -25,7 +25,7 @@
           <TableColumn fx:id="dueDateCol" prefWidth="87.0" text="Due Date" />
             <TableColumn minWidth="0.0" prefWidth="0.0" text="Due Date" />
             <TableColumn fx:id="statusCol" prefWidth="78.0" text="Status" />
-            <TableColumn fx:id="amountCol" minWidth="0.0" prefWidth="70.0" text="Price" />
+            <TableColumn fx:id="amountCol" minWidth="0.0" prefWidth="70.0" text="Price($)" />
         </columns>
       </TableView>
       <Button layoutX="226.0" layoutY="63.0" mnemonicParsing="false" onAction="#lostOnAction" prefHeight="25.0" prefWidth="83.0" text="Lost" />

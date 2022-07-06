@@ -24,5 +24,10 @@
 -customer search (success)
 -customer refres  (success)
 
--bookkeeping detail(not-success)(not really detail)
+-bookkeeping detail(success)
 -bookkeeping filter (success)
+
+-purchasing add(success)
+-purchasing delete(success)
+-purchasing detail(success)
+
