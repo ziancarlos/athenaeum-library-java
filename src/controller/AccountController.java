@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -42,6 +44,12 @@ public class AccountController {
     @FXML
     private TableColumn<?, ?> typeCol;
 
+    @FXML
+    private ComboBox<String> typeCb;
+
+    @FXML
+    private Button searchBtn;
+
     public void initialize() {
         if (CurrentUser.currentUser.getRole().equals("admin")) {
             Admin admin = (Admin) CurrentUser.currentUser;
@@ -50,6 +58,10 @@ public class AccountController {
             lv.getItems().add("Role : " + admin.getRole());
 
             table.setVisible(false);
+
+            searchBtn.setVisible(false);
+
+            typeCb.setVisible(false);
 
         } else if (CurrentUser.currentUser.getRole().equals("libarian")) {
             Libarian libarian = (Libarian) CurrentUser.currentUser;
@@ -60,6 +72,10 @@ public class AccountController {
 
             table.setVisible(false);
 
+            searchBtn.setVisible(false);
+
+            typeCb.setVisible(false);
+
         } else if (CurrentUser.currentUser.getRole().equals("customer")) {
             Customer customer = (Customer) CurrentUser.currentUser;
             lv.getItems().add("Id : " + customer.getId());
@@ -67,6 +83,8 @@ public class AccountController {
             lv.getItems().add("Role : " + customer.getRole());
             lv.getItems().add("Phone Number : " + customer.getPhoneNumber());
             lv.getItems().add("Blacklisted : " + customer.getBlacklisted());
+
+            setTypeCb();
 
             idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
             typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
@@ -117,9 +135,66 @@ public class AccountController {
 
     }
 
+    private void setTypeCb() {
+        typeCb.getItems().addAll("paid", "unpaid");
+    }
+
     @FXML
     void backOnAction(ActionEvent event) {
         BackBtn.backBtnActionEvent(event);
+    }
+
+    @FXML
+    void searchOnAction(ActionEvent event) {
+        if (typeCb.getSelectionModel().getSelectedItem() == null) {
+            typeCb.getSelectionModel().clearSelection();
+            return;
+        }
+        table.getItems().clear();
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseTools.getConnection();
+            statement = connection.prepareStatement(
+                    "SELECT * FROM penalties WHERE borrowed_book_borrowing_customer_id = ? AND payment_status = ?;");
+            statement.setInt(1, CurrentUser.currentUser.getId());
+            statement.setString(2, typeCb.getSelectionModel().getSelectedItem());
+
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                PenaltiesAccountTemp penaltiesAccountTemp = new PenaltiesAccountTemp(resultSet.getInt("id"),
+                        resultSet.getString("penalty_type"),
+                        resultSet.getString("penalty_date"), resultSet.getString("payment_status"),
+                        resultSet.getDouble("amount"));
+
+                table.getItems().add(penaltiesAccountTemp);
+
+            }
+        } catch (Exception e) {
+            AlertTools.showAlertError("Error!", e.getMessage());
+
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (statement != null)
+                    statement.close();
+                if (resultSet != null)
+                    resultSet.close();
+
+            } catch (Exception e) {
+                AlertTools.showAlertError("Error!", e.getMessage());
+
+                e.printStackTrace();
+            }
+
+            typeCb.getSelectionModel().clearSelection();
+        }
+
     }
 
 }
