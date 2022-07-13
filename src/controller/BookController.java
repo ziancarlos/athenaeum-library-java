@@ -265,10 +265,11 @@ public class BookController {
             try {
                 connection = DatabaseTools.getConnection();
                 preparedStatement = connection.prepareStatement(
-                        "SELECT books.id, books.name, books.availability, categories.id, categories.name, bookkeepings.payment_date AS purchase_date FROM books INNER JOIN  categories ON books.category_id = categories.id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id INNER JOIN bookkeepings ON purchasings_books_details.purchasing_id = bookkeepings.id where books.name LIKE ?");
+                        "SELECT books.id, books.name,books.availability,categories.id, categories.name, bookkeepings.payment_date AS purchase_date FROM  books INNER JOIN categories ON categories.id = books.category_id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id  INNER JOIN purchasings ON purchasings_books_details.purchasing_id = purchasings.id LEFT JOIN bookkeepings ON purchasings.id = bookkeepings.purchasing_id WHERE books.name LIKE ?;");
                 preparedStatement.setString(1, "%" + searchTf.getText() + "%");
                 resultSet = preparedStatement.executeQuery();
 
+                System.out.println("halo");
                 while (resultSet.next()) {
                     table.getItems().add(new Book(
                             resultSet.getInt("books.id"),
@@ -309,7 +310,7 @@ public class BookController {
             try {
                 connection = DatabaseTools.getConnection();
                 preparedStatement = connection.prepareStatement(
-                        "SELECT books.id, books.name, books.availability, categories.id, categories.name, bookkeepings.payment_date AS purchase_date FROM books INNER JOIN  categories ON books.category_id = categories.id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id INNER JOIN bookkeepings ON purchasings_books_details.purchasing_id = bookkeepings.id WHERE categories.id = ?");
+                        "SELECT books.id, books.name,books.availability,categories.id, categories.name, bookkeepings.payment_date AS purchase_date FROM  books INNER JOIN categories ON categories.id = books.category_id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id  INNER JOIN purchasings ON purchasings_books_details.purchasing_id = purchasings.id LEFT JOIN bookkeepings ON purchasings.id = bookkeepings.purchasing_id  WHERE categories.id = ?");
                 preparedStatement.setInt(1, categoryCb.getSelectionModel().getSelectedItem().getId());
                 resultSet = preparedStatement.executeQuery();
 
@@ -352,7 +353,7 @@ public class BookController {
             try {
                 connection = DatabaseTools.getConnection();
                 preparedStatement = connection.prepareStatement(
-                        "SELECT books.id, books.name, books.availability, categories.id, categories.name, bookkeepings.payment_date AS purchase_date FROM books INNER JOIN  categories ON books.category_id = categories.id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id INNER JOIN bookkeepings ON purchasings_books_details.purchasing_id = bookkeepings.id WHERE categories.id = ? AND books.name LIKE ? ");
+                        "SELECT books.id, books.name,books.availability,categories.id, categories.name, bookkeepings.payment_date AS purchase_date FROM  books INNER JOIN categories ON categories.id = books.category_id INNER JOIN purchasings_books_details ON books.id = purchasings_books_details.book_id  INNER JOIN purchasings ON purchasings_books_details.purchasing_id = purchasings.id LEFT JOIN bookkeepings ON purchasings.id = bookkeepings.purchasing_id   WHERE categories.id = ? AND books.name LIKE ? ");
                 preparedStatement.setInt(1, categoryCb.getSelectionModel().getSelectedItem().getId());
                 preparedStatement.setString(2, "%" + searchTf.getText() + "%");
 
