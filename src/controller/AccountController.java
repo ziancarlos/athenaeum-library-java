@@ -92,47 +92,53 @@ public class AccountController {
             statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
             amountCol.setCellValueFactory(new PropertyValueFactory<>("amount"));
 
-            Connection connection = null;
-            PreparedStatement statement = null;
-            ResultSet resultSet = null;
+            setTable();
+        }
 
+    }
+
+    private void setTable() {
+        table.getItems().clear();
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseTools.getConnection();
+            statement = connection.prepareStatement(
+                    "SELECT * FROM penalties WHERE borrowed_book_borrowing_customer_id = ?;");
+            statement.setInt(1, CurrentUser.currentUser.getId());
+
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                PenaltiesAccountTemp penaltiesAccountTemp = new PenaltiesAccountTemp(resultSet.getInt("id"),
+                        resultSet.getString("penalty_type"),
+                        resultSet.getString("penalty_date"), resultSet.getString("payment_status"),
+                        resultSet.getDouble("amount"));
+
+                table.getItems().add(penaltiesAccountTemp);
+
+            }
+        } catch (Exception e) {
+            AlertTools.showAlertError("Error!", e.getMessage());
+
+            e.printStackTrace();
+        } finally {
             try {
-                connection = DatabaseTools.getConnection();
-                statement = connection.prepareStatement(
-                        "SELECT * FROM penalties WHERE borrowed_book_borrowing_customer_id = ?;");
-                statement.setInt(1, CurrentUser.currentUser.getId());
+                if (connection != null)
+                    connection.close();
+                if (statement != null)
+                    statement.close();
+                if (resultSet != null)
+                    resultSet.close();
 
-                resultSet = statement.executeQuery();
-                while (resultSet.next()) {
-                    PenaltiesAccountTemp penaltiesAccountTemp = new PenaltiesAccountTemp(resultSet.getInt("id"),
-                            resultSet.getString("penalty_type"),
-                            resultSet.getString("penalty_date"), resultSet.getString("payment_status"),
-                            resultSet.getDouble("amount"));
-
-                    table.getItems().add(penaltiesAccountTemp);
-
-                }
             } catch (Exception e) {
                 AlertTools.showAlertError("Error!", e.getMessage());
 
                 e.printStackTrace();
-            } finally {
-                try {
-                    if (connection != null)
-                        connection.close();
-                    if (statement != null)
-                        statement.close();
-                    if (resultSet != null)
-                        resultSet.close();
-
-                } catch (Exception e) {
-                    AlertTools.showAlertError("Error!", e.getMessage());
-
-                    e.printStackTrace();
-                }
             }
         }
-
     }
 
     private void setTypeCb() {
@@ -148,8 +154,12 @@ public class AccountController {
     void searchOnAction(ActionEvent event) {
         if (typeCb.getSelectionModel().getSelectedItem() == null) {
             typeCb.getSelectionModel().clearSelection();
+
+            setTable();
+
             return;
         }
+
         table.getItems().clear();
 
         Connection connection = null;

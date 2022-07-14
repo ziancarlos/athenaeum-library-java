@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -36,6 +37,9 @@ public class HistoryController {
     @FXML
     private TableView<BorrowingHistoryTemp> table;
 
+    @FXML
+    private ComboBox<String> statusCb;
+
     public void initialize() {
         bookNameCol.setCellValueFactory(new PropertyValueFactory<>("book"));
         startDateCol.setCellValueFactory(new PropertyValueFactory<>("endDate"));
@@ -43,6 +47,14 @@ public class HistoryController {
         endDateCol.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+
+        setCb();
+
+        setTable();
+    }
+
+    private void setTable() {
+        table.getItems().clear();
 
         Connection connection = null;
         PreparedStatement statement = null;
@@ -85,9 +97,67 @@ public class HistoryController {
         }
     }
 
+    private void setCb() {
+        statusCb.getItems().addAll("returned", "broken", "lost", "on-going");
+    }
+
     @FXML
     void backOnAction(ActionEvent event) {
         BackBtn.backBtnActionEvent(event);
+    }
+
+    @FXML
+    void searchOnAction(ActionEvent event) {
+        if (statusCb.getSelectionModel().getSelectedItem() == null) {
+            statusCb.getSelectionModel().clearSelection();
+
+            setTable();
+
+            return;
+        }
+
+        table.getItems().clear();
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseTools.getConnection();
+            statement = connection.prepareStatement(
+                    "SELECT * FROM borrowed_books INNER JOIN books ON borrowed_books.book_id = books.id INNER JOIN bookkeepings ON borrowed_books.borrowing_id = bookkeepings.borrowing_id WHERE borrowed_books.borrowing_customer_id = ? AND borrowed_books.status = ?;");
+            statement.setInt(1, CurrentUser.currentUser.getId());
+            statement.setString(2, statusCb.getSelectionModel().getSelectedItem());
+
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                table.getItems().add(
+                        new BorrowingHistoryTemp(resultSet.getInt("borrowed_books.borrowing_id"),
+                                new Book(resultSet.getInt("books.id"), resultSet.getString("books.name")),
+                                resultSet.getString("borrowed_books.end_date"),
+                                resultSet.getString("bookkeepings.payment_date"),
+                                resultSet.getString("borrowed_books.status"),
+                                resultSet.getInt("borrowed_books.price")));
+            }
+        } catch (Exception e) {
+            AlertTools.showAlertError("Error!", e.getMessage());
+
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (statement != null)
+                    statement.close();
+                if (resultSet != null)
+                    resultSet.close();
+
+            } catch (Exception e) {
+                AlertTools.showAlertError("Error!", e.getMessage());
+
+                e.printStackTrace();
+            }
+        }
     }
 
 }
