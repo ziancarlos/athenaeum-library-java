@@ -115,14 +115,15 @@
 3. Install Javafx Connector On The Project
 4. Install JDBC Connector On The Project
 4. Set Up MYSQL Database Name, Username And Password in src/config.properties
-5. Login as admin username
+5. Login as admin username : 
    ```sh
    admin
    ```
-6. Login as admin password
+6. Login as admin password : 
    ```sh
    123456789
    ```
+7. Enjoy!
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
